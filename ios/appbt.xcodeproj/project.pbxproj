@@ -14,6 +14,7 @@
 		4B15F7F2D81BD910EA416395 /* libPods-appbt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F6425F19F14D7AB0518034C /* libPods-appbt.a */; };
 		503F5DC507B59D277308622B /* libPods-appbt-appbtTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF77005564DF8D350719F74 /* libPods-appbt-appbtTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		84EB771B2C2C168D0074D2F9 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 84EB771A2C2C168D0074D2F9 /* Fonts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +40,7 @@
 		26535AFCBD14A2FBC97D6A4D /* Pods-appbt-appbtTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-appbt-appbtTests.debug.xcconfig"; path = "Target Support Files/Pods-appbt-appbtTests/Pods-appbt-appbtTests.debug.xcconfig"; sourceTree = "<group>"; };
 		45C28451190560AAAA45D54F /* Pods-appbt.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-appbt.debug.xcconfig"; path = "Target Support Files/Pods-appbt/Pods-appbt.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = appbt/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		84EB771A2C2C168D0074D2F9 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
 		8799880FDA80680591ECD1DD /* Pods-appbt.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-appbt.release.xcconfig"; path = "Target Support Files/Pods-appbt/Pods-appbt.release.xcconfig"; sourceTree = "<group>"; };
 		8F6425F19F14D7AB0518034C /* libPods-appbt.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-appbt.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C990004C5EE273D926FF8BB /* Pods-appbt-appbtTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-appbt-appbtTests.release.xcconfig"; path = "Target Support Files/Pods-appbt-appbtTests/Pods-appbt-appbtTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				84EB771A2C2C168D0074D2F9 /* Fonts */,
 				13B07FAE1A68108700A75B9A /* appbt */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* appbtTests */,
@@ -241,6 +244,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84EB771B2C2C168D0074D2F9 /* Fonts in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
@@ -466,6 +470,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 46KP6ZACYU;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = appbt/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -493,6 +498,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 46KP6ZACYU;
 				INFOPLIST_FILE = appbt/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -580,10 +586,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -651,10 +654,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
