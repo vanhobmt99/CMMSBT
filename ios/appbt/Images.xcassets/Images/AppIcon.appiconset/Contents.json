@@ -1,0 +1,26 @@
+{
+  "images" : [
+    {
+      "filename" : "ic_launcher 1.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "idiom" : "universal",
+      "language-direction" : "left-to-right",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "idiom" : "universal",
+      "language-direction" : "right-to-left",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
