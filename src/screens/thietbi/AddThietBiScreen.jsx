@@ -13,6 +13,7 @@ import {
   Platform,
   PermissionsAndroid,
 } from 'react-native';
+import ImageModal from 'react-native-image-modal';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SelectList } from 'react-native-dropdown-select-list';
 import DateTimePickerModal from "react-native-modal-datetime-picker";

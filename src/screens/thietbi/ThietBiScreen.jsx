@@ -14,12 +14,14 @@ import {
     getListHangSanXuatValue,
     getImageByThietBiID
  } from '../../api/Api_ThietBi';
+ import ImageModal from 'react-native-image-modal';
 import { GlobalContext } from '../../store/GlobalProvider';
 import { getVietNamDate } from '../../common/CommonFunction';
 import { Loading } from '../../common/Loading';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import DelThietBiModal from '../../screens/thietbi/DelThietBiModal';
 import moment from 'moment';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -332,17 +334,31 @@ function FlatListItemThietBi({ item }) {
         }
     };
 
+ 
+
     const renderImage = () => {
         const uri = imageUri;
         if (uri) {
-          return (
-            <Image
-                source={{ uri }}
-                style={styles.imageStyle}
-            />
-          );
+            const components = [
+                
+                <ImageModal
+                    key="image"
+                    source={{ uri }}
+                    style={styles.imageStyle}
+                />
+            ];
+    
+            return (
+                <View style={styles.divImage}>
+                    {components}
+                </View>
+            );
         }
         return null;
+    };
+
+    const handleZoomImage = (uri) => {
+        // Handle zooming logic here
     };
 
     const renderMenuItem = (onPress, title, iconName, iconSize = 20, iconColor = '#000', showDivider = true) => (
@@ -439,11 +455,11 @@ function FlatListItemThietBi({ item }) {
                     </View>                            
                     <View style = {styles.divImage}>
                         {imageUri && (
+
                           <>{renderImage()}</>                         
                         )}
                     </View> 
                 </View>
-
             </View>
         </View>
     );
@@ -559,9 +575,11 @@ const styles = StyleSheet.create({
     },
     divImage: {
         flex: 2,
-        marginLeft: 5, 
+        marginLeft: 5,
+        marginRight: 10, 
         justifyContent: 'center',
-        alignItems: 'center',       
+        alignItems: 'center', 
+            
     },     
     buttonDel: {
         backgroundColor: '#d9534f',        
@@ -578,7 +596,8 @@ const styles = StyleSheet.create({
         maxWidth: 120,
         maxHeight: 120,
         marginBottom: 2,
-        width: width * 0.1,
+        marginRight: 5,
+        width: width * 0.15,
         height: undefined,  
         aspectRatio: 1,
     },
