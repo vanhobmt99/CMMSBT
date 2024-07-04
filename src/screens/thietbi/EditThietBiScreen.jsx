@@ -13,13 +13,15 @@ import {
   Platform,
   PermissionsAndroid,
 } from 'react-native';
+import Geolocation from '@react-native-community/geolocation';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SelectList } from 'react-native-dropdown-select-list';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import Toast from 'react-native-toast-message';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { useIsFocused } from '@react-navigation/native';
 import { Menu, Divider, Provider as PaperProvider } from 'react-native-paper';
 import {getValidString, getValidNumber} from '../../common/CommonFunction';
@@ -93,6 +95,10 @@ const EditThietBiScreen = ({ route, navigation }) => {
   const [dataxx, setDataXuatXu] = useState([]);
   const [datancc, setDataNhaCungCap] = useState([]);        
   const [datahsx, setDataHangSanXuat] = useState([]);
+
+  const [currentLongitude, setCurrentLongitude] = useState(0);
+  const [currentLatitude, setCurrentLatitude] = useState(0);
+  const [locationStatus, setLocationStatus] = useState('');
 
   const handleNumberChange = (value, setter) => {
       if (/^\d+$/.test(value) || value === '') {
@@ -260,7 +266,8 @@ const EditThietBiScreen = ({ route, navigation }) => {
         setStatus(status || 0);
         setTenTrangThai(tenTrangThai || '');
         setNoiDung(thongSoThietBi || '');        
-        setFilePath(hinhAnh);        
+        setFilePath(hinhAnh); 
+        setImageUri(hinhAnh);       
       }
     };
   
@@ -334,91 +341,110 @@ const EditThietBiScreen = ({ route, navigation }) => {
   }
 }, [route.params.thietBiId]);
 
+  //Xử lý chụp hình và chọn ảnh
+  const requestPermission = async (permission) => {
+    const result = await request(permission);
+    return result === RESULTS.GRANTED;
+  };
+
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          {
-            title: 'Camera Permission',
-            message: 'App needs camera permission',
-          }
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'This app needs access to your camera to take photos and videos.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        }
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } else if (Platform.OS === 'ios') {
+      const response = await fetch('https://apple.com');
+      if (response.ok) {
+        return true;
+      } else {
+        Alert.alert('Permission Denied', 'Camera permissions are required to take photos and videos.');
         return false;
       }
-    } else return true;
+    }
+    return false;
   };
-
-  const requestExternalWritePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'External Storage Write Permission',
-            message: 'App needs write permission',
-          }
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        Alert.alert('Write permission error', err);
-        return false;
-      }
-    } else return true;
-  };
-
-  const captureImage = async (type) => {
-    const options = {
+  
+  const openCamera = async (type) => {
+    let options = {
       mediaType: type,
-      maxWidth: 300,
-      maxHeight: 550,
+      maxWidth: 900,
+      maxHeight: 675,
       quality: 1,
       videoQuality: 'low',
       durationLimit: 30, // Video max duration in seconds
       saveToPhotos: true,
+      includeBase64: true,
+      storageOptions: {
+        skipBackup: true,
+      },
     };
-
-    const isCameraPermitted = await requestCameraPermission();
-    const isStoragePermitted = await requestExternalWritePermission();
-
-    if (isCameraPermitted && isStoragePermitted) {
-      launchCamera(options, (response) => {
+  
+    const cameraGranted = await requestCameraPermission();
+    if (cameraGranted) {
+      setIsLoading(true);
+      try {
+        const response = await launchCamera(options);
+        setIsLoading(false);
         if (response.didCancel) {
-          Alert.alert('User cancelled camera picker');
-          return;
+          console.log('User cancelled image picker');
         } else if (response.errorCode) {
-          Alert.alert(response.errorMessage || 'Unknown error');
-          return;
+          console.log('ImagePicker Error: ', response.errorCode);
+        } else if (response.assets && response.assets.length > 0) {
+          console.log('Captured URI: ', response.assets[0].uri);
+          setFilePath(response.assets[0]);
         }
-        setFilePath(response.assets[0]);
-      });
+      } catch (error) {
+        setIsLoading(false);
+        console.log('Launch camera error: ', error);
+      }
+    } else {
+      console.log('Permissions not granted');
+      Alert.alert('Permission Denied', 'Camera and storage permissions are required to take and save photos or videos.');
     }
   };
 
-  const chooseFile = (type) => {
-    const options = {
+  const chooseFile = async (type) => {
+    let options = {
       mediaType: type,
-      maxWidth: 300,
-      maxHeight: 550,
+      title: 'Choose an Image',
+      maxWidth: 900,
+      maxHeight: 675,
       quality: 1,
+      includeBase64: true,
+      storageOptions: {
+        skipBackup: true,
+      },
     };
 
-    launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        Alert.alert('User cancelled image picker');
-        return;
-      } else if (response.errorCode) {
-        Alert.alert(response.errorMessage || 'Unknown error');
-        return;
+      setIsLoading(true);
+      try {
+        const response = await launchImageLibrary(options);
+        setIsLoading(false);
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.errorCode) {
+          console.log('ImagePicker Error: ', response.errorMessage);
+        } else if (response.assets[0].fileSize > 5242880) {
+          alert("Oops! the photos are too big. Max photo size is 4MB per photo. Please reduce the resolution or file size and retry");
+        } else {
+          console.log('Selected URI: ', response.assets[0].uri);
+          setFilePath(response.assets[0]);
+        }
+      } catch (error) {
+        setIsLoading(false);
+        console.log('Launch image library error: ', error);
       }
-      setFilePath(response.assets[0]);
-    });
-  };
-
+    
+  }; 
+  
   const handleSubmit = async () => {
     try {
       // Validate form inputs
@@ -542,8 +568,107 @@ const EditThietBiScreen = ({ route, navigation }) => {
     setGhiChu(null);
     setStatus(0);    
     setFilePath(null);
+    setImageUri(null);
   };  
   
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      if (Platform.OS === 'android') 
+      {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: 'Location Access Required',
+              message: 'This App needs to Access your location',
+            },
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            //To Check, If Permission is granted
+            getOneTimeLocation();
+            subscribeLocationLocation();
+          } else {
+            setLocationStatus('Permission Denied');
+          }
+        } 
+        catch (err) {
+          console.warn(err);
+        }      
+      } 
+      else 
+      {
+          getOneTimeLocation();
+          subscribeLocationLocation();
+      }
+    };
+  
+    requestLocationPermission();
+    return () => {
+      Geolocation.clearWatch(watchID);
+    };
+  }, []);
+  
+  const getOneTimeLocation = () => {
+    setLocationStatus('Getting Location ...');
+    Geolocation.getCurrentPosition(
+      //Will give you the current location
+      (position) => {
+        setLocationStatus('You are Here');
+        //getting the Longitude from the location json
+        const currentLongitude = 
+          JSON.stringify(position.coords.longitude);
+  
+        //getting the Latitude from the location json
+        const currentLatitude = 
+          JSON.stringify(position.coords.latitude);
+  
+        //Setting Longitude state
+        setCurrentLongitude(currentLongitude);
+        
+        //Setting Longitude state
+        setCurrentLatitude(currentLatitude);
+      },
+      (error) => {
+        setLocationStatus(error.message);
+      },
+      {
+        enableHighAccuracy: false, //máy ảo để true, real device để false
+        timeout: 30000,
+        maximumAge: 1000
+      },
+    );
+  };
+  
+  const subscribeLocationLocation = () => {
+    watchID = Geolocation.watchPosition(
+      (position) => {
+        //Will give you the location on location change
+        
+        setLocationStatus('You are Here');
+        //getting the Longitude from the location json        
+        const currentLongitude =
+          JSON.stringify(position.coords.longitude);
+  
+        //getting the Latitude from the location json
+        const currentLatitude = 
+          JSON.stringify(position.coords.latitude);
+  
+        //Setting Longitude state
+        setCurrentLongitude(currentLongitude);
+  
+        //Setting Latitude state
+        setCurrentLatitude(currentLatitude);
+      },
+      (error) => {
+        setLocationStatus(error.message);
+      },
+      {
+        enableHighAccuracy: false,//máy ảo để true, real device để false
+        maximumAge: 1000
+      },
+    );
+  };
+
   // Helper function to convert data keys to strings
   const convertDataKeysToString = (data) => {
     return data.map(item => ({ key: item.key.toString(), value: item.value }));
@@ -576,12 +701,13 @@ const EditThietBiScreen = ({ route, navigation }) => {
 
   const renderImage = () => {
     const uri = filePath?.uri || imageUri;
-    if (uri) {
+    if (uri && (uri.startsWith('http') || uri.startsWith('file') || uri.startsWith('content'))) {
       return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Image
             source={{ uri }}
             style={styles.imageStyle}
+            onError={(e) => console.log('Image load error: ', e.nativeEvent.error)}
           />
           {filePath?.uri && (
             <TouchableOpacity onPress={delTempImage}>
@@ -617,40 +743,40 @@ const EditThietBiScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                   }
                 >
-                  <Menu.Item 
-                    onPress={() => { 
-                      chooseFile('photo'); 
+                   <Menu.Item
+                    onPress={() => {
+                      chooseFile('photo');
                       closeMenu();
-                    }} 
+                    }}
                     title="Image Library"
-                    leadingIcon={() => <Icon name="image" size={20} />} 
-                  />                        
+                    leadingIcon={() => <Icon name="image" size={20} />}
+                  />
                   <Divider style={styles.divider} />
-                  <Menu.Item 
-                    onPress={() => { 
-                      captureImage('photo'); 
+                  <Menu.Item
+                    onPress={() => {
+                      openCamera('photo');
                       closeMenu();
-                    }} 
+                    }}
                     title="Camera"
-                    leadingIcon={() => <Icon name="camera" size={20} />} 
+                    leadingIcon={() => <Icon name="camera" size={20} />}
                   />
                   <Divider style={styles.divider} />
-                  <Menu.Item 
-                    onPress={() => { 
-                      chooseFile('video'); 
+                  <Menu.Item
+                    onPress={() => {
+                      chooseFile('video');
                       closeMenu();
-                    }} 
+                    }}
                     title="Video Library"
-                    leadingIcon={() => <Icon name="image" size={20} />} 
+                    leadingIcon={() => <Icon name="image" size={20} />}
                   />
                   <Divider style={styles.divider} />
-                  <Menu.Item 
-                    onPress={() => { 
-                      captureImage('video'); 
+                  <Menu.Item
+                    onPress={() => {
+                      openCamera('video');
                       closeMenu();
-                    }} 
+                    }}
                     title="Video"
-                    leadingIcon={() => <Icon name="video" size={20} />} 
+                    leadingIcon={() => <Icon name="video" size={20} />}
                   />
                 </Menu>
               </View>                                                                  

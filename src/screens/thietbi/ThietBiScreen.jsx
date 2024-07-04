@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { Text, View, Image, TouchableOpacity, Alert, SafeAreaView, StatusBar, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { Text, View, Image, Modal, TouchableOpacity, Alert, SafeAreaView, StatusBar, FlatList, StyleSheet, Dimensions } from 'react-native';
 //import CheckBox from '@react-native-community/checkbox';
 import { Menu, Divider, Provider as PaperProvider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,14 +14,13 @@ import {
     getListHangSanXuatValue,
     getImageByThietBiID
  } from '../../api/Api_ThietBi';
- import ImageModal from 'react-native-image-modal';
 import { GlobalContext } from '../../store/GlobalProvider';
 import { getVietNamDate } from '../../common/CommonFunction';
 import { Loading } from '../../common/Loading';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import DelThietBiModal from '../../screens/thietbi/DelThietBiModal';
 import moment from 'moment';
-
+//import ImageViewer from 'react-native-image-zoom-viewer';
 
 const { width, height } = Dimensions.get('window');
 
@@ -122,6 +121,7 @@ function FlatListItemThietBi({ item }) {
     const [TenHangSanXuat, setTenHangSanXuat] = useState('');
 
     const [modalDelVisible, setModalDelVisible] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
     const [selectedThietBiId, setSelectedThietBiId] = useState(null);
     const [imageUri, setImageUri] = useState(null);
     const [visible, setVisible] = useState(false);
@@ -334,32 +334,32 @@ function FlatListItemThietBi({ item }) {
         }
     };
 
- 
-
     const renderImage = () => {
-        const uri = imageUri;
-        if (uri) {
-            const components = [
-                
-                <ImageModal
-                    key="image"
-                    source={{ uri }}
-                    style={styles.imageStyle}
-                />
-            ];
-    
-            return (
-                <View style={styles.divImage}>
-                    {components}
-                </View>
-            );
+        if (imageUri) {
+          return (
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Image
+                source={{ uri: imageUri }}
+                style={styles.imageStyle}
+              />
+            </TouchableOpacity>
+          );
         }
         return null;
     };
 
-    const handleZoomImage = (uri) => {
-        // Handle zooming logic here
-    };
+    /*const renderImage = () => {
+        const uri = imageUri;
+        if (uri) {
+          return (
+            <Image
+                source={{ uri }}
+                style={styles.imageStyle}
+            />
+          );
+        }
+        return null;
+    };*/
 
     const renderMenuItem = (onPress, title, iconName, iconSize = 20, iconColor = '#000', showDivider = true) => (
         <>
@@ -455,11 +455,32 @@ function FlatListItemThietBi({ item }) {
                     </View>                            
                     <View style = {styles.divImage}>
                         {imageUri && (
-
-                          <>{renderImage()}</>                         
+                          <>{renderImage()}</>                                                   
                         )}
+                        <Modal
+                            visible={modalVisible}
+                            transparent={true}
+                            onRequestClose={() => setModalVisible(false)}
+                        >
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalContent}>
+                                    <Image
+                                        source={{ uri: imageUri }}
+                                        style={styles.modalImage}
+                                        resizeMode="contain"
+                                    />
+                                    <TouchableOpacity
+                                        style={styles.closeButton}
+                                        onPress={() => setModalVisible(false)}
+                                        >
+                                        <Text style={styles.closeButtonText}>X</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
                     </View> 
                 </View>
+
             </View>
         </View>
     );
@@ -575,11 +596,9 @@ const styles = StyleSheet.create({
     },
     divImage: {
         flex: 2,
-        marginLeft: 5,
-        marginRight: 10, 
+        marginLeft: 5, 
         justifyContent: 'center',
-        alignItems: 'center', 
-            
+        alignItems: 'center',       
     },     
     buttonDel: {
         backgroundColor: '#d9534f',        
@@ -596,10 +615,10 @@ const styles = StyleSheet.create({
         maxWidth: 120,
         maxHeight: 120,
         marginBottom: 2,
-        marginRight: 5,
-        width: width * 0.15,
+        width: width * 0.1,
         height: undefined,  
         aspectRatio: 1,
+        
     },
     menuMargin: {
       marginTop: -65,
@@ -620,5 +639,39 @@ const styles = StyleSheet.create({
     },
     menuItem: {
         fontSize: 13,
-    }
+    },    
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '92%',
+    },
+    modalImage: {
+        width: '100%',
+        height: height/3,
+        resizeMode: 'contain',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        paddingTop: 0,
+        paddingBottom: 0,
+        paddingLeft: 6,
+        paddingRight: 6,
+        borderRadius: 3,
+    },
+    closeButtonText: {
+        color: 'white',
+        fontSize: 16,
+    },
 });

@@ -29,10 +29,49 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need your permission to use the camera</string>
+	<key>NSContactsUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+	<dict>
+		<key>YOUR-PURPOSE-KEY</key>
+		<string>YOUR TEXT</string>
+	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>YOUR TEXT</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSMotionUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSPhotoLibraryAndUsageDescription</key>
+	<string>We need your permission to save photos to your library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow access to the photo library for selecting images</string>
+	<string>YOUR TEXT</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSSiriUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>YOUR TEXT</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>YOUR TEXT</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
@@ -57,11 +96,9 @@
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen.storyboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
-    <array>
+	<array>
 		<string>armv7</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>This app requires access to the camera.</string>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
 	<key>UISupportedInterfaceOrientations</key>
