@@ -5,6 +5,15 @@ const apiGetListThietBiByDonVi = 'api/CMMSBT/CongViec/GetListThietBiByDonVi';
 const apiDeleteByID = 'api/CMMSBT/CongViec/DeleteByID';
 const apiGetListCongViecBaoTriByDonVi = 'api/CMMSBT/CongViec/GetListCongViecBaoTriByDonVi';
 const apiPostPutCongViecBaoTri = 'api/CMMSBT/CongViec/PostPutCongViecBaoTri';
+const apiUpdateTrangThai = 'api/CMMSBT/CongViec/UpdateTrangThai';
+const apiUpdateNhanXetDanhGia = 'api/CMMSBT/CongViec/UpdateNhanXetDanhGia';
+const apiDeleteCTCVByID = 'api/CMMSBT/CongViec/DeleteCTCVByID';
+const apiUpdateNhacViec = 'api/CMMSBT/CongViec/UpdateNhacViec';
+
+// Chi tiết công việc
+const apiGetListByMacv = 'api/CMMSBT/CongViec/GetListByMacv';
+const apiPostPutCTCV = 'api/CMMSBT/CongViec/PostPutCTCV';
+const apiUpdateChuKyBaoDuong = 'api/CMMSBT/CongViec/UpdateChuKyBaoDuong';
 
 async function getListDonViTinh(url) {
   try {
@@ -149,6 +158,134 @@ async function postPutCongViecBaoTri(url, formData) {
   }  
 }
 
+async function postEditTrangThai(url, formData) {
+  try {
+    let response = await fetch(url + apiUpdateTrangThai, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data'
+      },
+      body: formData,
+    });
+    let responseJson = await response.json(); 
+    return responseJson;
+  } catch (error) {
+    console.log(`Error is : ${error}`);
+    throw error; 
+  }  
+}
+
+async function postEditNhanXetDanhGia(url, formData) {
+  try {
+    let response = await fetch(url + apiUpdateNhanXetDanhGia, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data'
+      },
+      body: formData,
+    });
+    let responseJson = await response.json(); 
+    return responseJson;
+  } catch (error) {
+    console.log(`Error is : ${error}`);
+    throw error; 
+  }  
+}
+
+async function postEditNhacViec(url, formData) {
+  try {
+    let response = await fetch(url + apiUpdateNhacViec, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data'
+      },
+      body: formData,
+    });
+    let responseJson = await response.json(); 
+    return responseJson;
+  } catch (error) {
+    console.log(`Error is : ${error}`);
+    throw error; 
+  }  
+}
+
+async function getListByMacv(url, _macv) {
+  try {
+    let response = await fetch(url + apiGetListByMacv, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      }, 
+      body: JSON.stringify({       
+        macv: _macv,
+      }),      
+    });
+    let responseJson = await response.json(); 
+    return responseJson;
+  } catch (error) {
+    console.log(`Error is : ${error}`);
+  }
+}
+
+async function postPutCTCV(url, formData) {
+  try {
+    let response = await fetch(url + apiPostPutCTCV, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData),
+    });
+    let responseJson = await response.json(); 
+    return responseJson;
+  } catch (error) {
+    console.log(`Error is : ${error}`);
+    throw error; 
+  }  
+}
+
+async function deleteCTCVByID(url, _id) {
+  try {
+    let response = await fetch(url + apiDeleteCTCVByID, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      }, 
+      body: JSON.stringify({       
+        id: _id,
+      }),      
+    });
+    let responseJson = await response.json(); 
+    return responseJson;
+  } catch (error) {
+    console.log(`Error is : ${error}`);
+  }
+}
+
+async function postEditChuKyBaoDuong(url, formData) {
+  try {
+    let response = await fetch(url + apiUpdateChuKyBaoDuong, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data'
+      },
+      body: formData,
+    });
+    let responseJson = await response.json(); 
+    return responseJson;
+  } catch (error) {
+    console.log(`Error is : ${error}`);
+    throw error; 
+  }  
+}
+
 
 export {  
   getListDonViTinh,
@@ -157,5 +294,12 @@ export {
   getListThietBiByDonVi,
   deleteByID,
   getListCongViecBaoTriByDonVi,
-  postPutCongViecBaoTri
+  postPutCongViecBaoTri,
+  postEditTrangThai,
+  postEditNhanXetDanhGia,
+  postEditNhacViec,
+  getListByMacv,
+  postPutCTCV,
+  deleteCTCVByID,
+  postEditChuKyBaoDuong,  
 };

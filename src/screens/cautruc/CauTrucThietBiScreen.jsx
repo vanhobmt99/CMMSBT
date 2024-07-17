@@ -155,7 +155,7 @@ const CauTrucThietBiScreen = ({ route, navigation }) => {
 
             <View style={{ height: 5 }}></View>
 
-            <View style={styles.cardView}>
+            <View style={styles.cardViewNull}>
               <Text style={styles.cardTitleH4}>{TenThietBiTitle}</Text>
             </View>
 
@@ -252,10 +252,11 @@ function FlatListItemCauTruc({ item }) {
   return (
       <View style={styles.cardView}>        
           <View style={styles.cardViewContainer}>                                  
-              <View style={styles.viewContainerFlatlist}>
-                  <Text style={styles.titleFlatlist}>Thành phần:</Text>
+            <View style={styles.itemInfoRow}>
+              <View style={styles.itemColumn}>
+                  <Text style={styles.itemLabel}>Thành phần:</Text>
                   <View style = {styles.divFlexFive}>
-                      <Text style={styles.itemFlatlist}>{item.tenCttb || ''}</Text>
+                      <Text style={styles.itemValue}>{item.tenCttb || ''}</Text>
                   </View> 
                   <View style = {styles.divFlexOne}> 
                       <Menu
@@ -263,7 +264,7 @@ function FlatListItemCauTruc({ item }) {
                           onDismiss={closeMenu}
                           anchor={
                             <TouchableOpacity onPress={openMenu} style={styles.divTouchableOpacity}>
-                              <Icon name="dots-vertical" size={25} />
+                              <Icon name="dots-horizontal" size={25} />
                             </TouchableOpacity>
                           }
                           style={styles.menuMargin}>
@@ -279,24 +280,32 @@ function FlatListItemCauTruc({ item }) {
                       onClose={() => setModalDelVisible(false)}
                       onSearch={handleSearch}
                       cauTrucThietBiId={selectedId}
-                  />                                                               
-              </View>                           
-              <View style={styles.viewContainerFlatlist}>
-                  <Text style={styles.titleFlatlist}>Số lượng:</Text>
-                  <Text style={styles.itemFlatlist}>{item.soLuong || 0}</Text>
-              </View>                      
-              <View style={styles.viewContainerFlatlist}>
-                  <Text style={styles.titleFlatlist}>Xuất xứ:</Text>
-                  <Text style={styles.itemFlatlist}>{item.xuatXu}</Text>
+                  />
+                </View>                                                                 
+              </View>  
+                          
+              <View style={styles.itemInfoRow}>
+                <View style={styles.itemColumn}>
+                  <Text style={styles.itemLabel}>Số lượng:</Text>
+                  <Text style={styles.itemValue}>{item.soLuong || 0}</Text>
+                </View>
+                <View style={styles.itemColumn}>
+                  <Text style={styles.itemLabel}>Xuất xứ:</Text>
+                  <Text style={styles.itemValue}>{item.xuatXu}</Text>
+                </View>
               </View>
-              <View style={styles.viewContainerFlatlist}>
-                  <Text style={styles.titleFlatlist}>Năm sử dụng:</Text>
-                  <Text style={styles.itemFlatlist}>{item.namSuDung}</Text>
-              </View>
-              <View style={styles.viewContainerFlatlist}>
-                  <Text style={styles.titleFlatlist}>Ngày:</Text>
-                  <Text style={styles.itemFlatlist}>{item.ngayCapNhat ? getVietNamDate(item.ngayCapNhat) : ''}</Text>
-              </View>                      
+
+              <View style={styles.itemInfoRow}>
+                <View style={styles.itemColumn}>
+                  <Text style={styles.itemLabel}>Năm sử dụng:</Text>
+                  <Text style={styles.itemValue}>{item.namSuDung}</Text>
+                </View>
+                <View style={styles.itemColumn}>
+                  <Text style={styles.itemLabel}>Ngày:</Text>
+                  <Text style={styles.itemValue}>{item.ngayCapNhat ? getVietNamDate(item.ngayCapNhat) : ''}</Text>
+                </View>
+              </View>                    
+              <View style={styles.viewContainerFlatlist}></View>    
 
           </View>
       </View>
@@ -312,13 +321,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#ecf0f3',
     alignItems: 'center',
-    padding: 10,
+    padding: 7,
   },
   titleHeader: {
-    fontSize: 20,
+    flex: 1,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
-    marginLeft: 10,
+    textAlign: 'center',
   },
   buttonFilter: {
     backgroundColor: '#5caef8',
@@ -330,25 +339,33 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     padding: 2,
     borderRadius: 2,
-  },
- 
+  }, 
   buttonPlus: {
     backgroundColor: '#5cb85c', 
     marginLeft: 5,
     padding: 2,
     borderRadius: 2,
   },
+  cardViewNull : {       
+    backgroundColor: 'white',
+    width: width * 0.96, 
+    height: 'auto', 
+    marginTop: 5, 
+    marginBottom: 1, 
+    marginLeft: 'auto', 
+    marginRight: 'auto',
+    paddingBottom: 5,
+    paddingTop: 5,
+  },
   cardView : {       
-      backgroundColor: 'white',
-      width: width * 0.96, 
-      height: 'auto', 
-      marginTop: 5, 
-      marginBottom: 5, 
-      marginLeft: 'auto', 
-      marginRight: 'auto',
-      borderRadius: width * 0.02,
-      paddingBottom: 5,
-      paddingTop: 5,
+    backgroundColor: 'white',
+    width: width * 0.96, 
+    height: 'auto', 
+    paddingTop: 5,  
+    paddingBottom: 5, 
+    marginLeft: 'auto', 
+    marginRight: 'auto',
+    marginBottom: 1, 
   },
   cardViewContainer: {
       width: width * 0.96, 
@@ -400,6 +417,24 @@ const styles = StyleSheet.create({
       justifyContent : 'flex-start',
       marginRight : 10,
       flex : 1,
+  },
+  itemInfoRow: {
+    flexDirection: 'row',
+    marginTop: 6,
+    marginLeft: 15,
+  },
+  itemColumn: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  itemLabel: {
+    fontSize: 14,
+    fontStyle : 'italic',
+  },
+  itemValue: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
   submitText: {    
       backgroundColor:'#428bca',

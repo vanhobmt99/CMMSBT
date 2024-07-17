@@ -18,7 +18,7 @@ import { GlobalContext } from '../../store/GlobalProvider';
 import { getVietNamDate } from '../../common/CommonFunction';
 import { Loading } from '../../common/Loading';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import DelThietBiModal from '../../screens/thietbi/DelThietBiModal';
+import DelThietBiModal from './DelThietBiModal';
 import moment from 'moment';
 //import ImageViewer from 'react-native-image-zoom-viewer';
 
@@ -481,8 +481,9 @@ function FlatListItemThietBi({ item }) {
                     </View> 
                 </View>
 
-            </View>
+            </View>          
         </View>
+        
     );
 }
 
@@ -490,6 +491,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: 5,
+        paddingBottom: 10,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#dcdcdc',
@@ -505,7 +507,7 @@ const styles = StyleSheet.create({
         width: width * 0.96, 
         height: 'auto', 
         marginLeft: 'auto', 
-        marginRight: 'auto'
+        marginRight: 'auto',       
     },
     cardViewDataNullContainer: {
         width: width * 0.96, 

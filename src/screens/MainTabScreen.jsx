@@ -3,18 +3,18 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import HomeScreen from '../screens/home/HomeScreen';
-import ThietBiScreen from '../screens/thietbi/ThietBiScreen';
-import SearchThietBiModal from '../screens/thietbi/SearchThietBiModal';
-import ThongBaoScreen from '../screens/thongbao/ThongBaoScreen';
-import ExploreScreen from './ExploreScreen';
-import TaiKhoanScreen from '../screens/account/TaiKhoanScreen';
+import HomeScreen from './home/HomeScreen';
+import ThietBiScreen from './thietbi/ThietBiScreen';
+import SearchThietBiModal from './thietbi/SearchThietBiModal';
+import ThongBaoScreen from './thongbao/ThongBaoScreen';
+import ConfigScreen from './home/ConfigScreen';
+import TaiKhoanScreen from './account/TaiKhoanScreen';
 
 
 const HomeStack = createStackNavigator();
 const ThietBiStack = createStackNavigator();
 const ThongBaoStack = createStackNavigator();
-const ExploreStack = createStackNavigator();
+const ConfigStack = createStackNavigator();
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -24,11 +24,11 @@ const MainTabScreen = () => (
         name="Home"
         component={HomeStackScreen}
         options={{
-          tabBarLabel: 'Trang chủ',
+          tabBarLabel: 'Dashboard',
           //tabBarColor: '#009387',
           tabBarIcon: ({ color }) => (
             <Icon 
-            name="home-account" 
+            name="home-outline" 
             color={color}
             size={26}
             />
@@ -48,7 +48,7 @@ const MainTabScreen = () => (
       />
       <Tab.Screen
         name="Notifications"
-        component={DetailsStackScreen}
+        component={ThongBaoStackScreen}
         options={{
           tabBarLabel: 'Thông báo',
           //tabBarColor: '#1f65ff',
@@ -69,8 +69,8 @@ const MainTabScreen = () => (
         }}
       />
       <Tab.Screen
-        name="Explore"
-        component={ExploreStackScreen}
+        name="Config"
+        component={ConfigStackScreen}
         options={{
           tabBarLabel: 'Thêm',
           //tabBarColor: '#d02860',
@@ -84,7 +84,7 @@ const MainTabScreen = () => (
 
 export default MainTabScreen;
 
-const HomeStackScreen = ({navigation}) => (
+const HomeStackScreen = () => (
 <HomeStack.Navigator screenOptions={{        
         headerStyle: {
           backgroundColor: '#ecf0f3',
@@ -100,7 +100,7 @@ const HomeStackScreen = ({navigation}) => (
         title:'Dashboard',
         headerLeft: () => (
           <View style={{ marginLeft: 10 }}>
-            <Icon name="home-outline" color="#000" size={26} />
+            <Icon name="signal-cellular-outline" color="#000" size={26} />
           </View>
         )
         }} />
@@ -190,7 +190,7 @@ const ThietBiStackScreen = ({navigation}) => {
 
 //export default ThietBiTabStack;
 
-const DetailsStackScreen = ({ navigation}) => (
+const ThongBaoStackScreen = ({ navigation }) => (
 <ThongBaoStack.Navigator screenOptions={{
         headerStyle: {
           backgroundColor: '#ecf0f3',
@@ -213,8 +213,8 @@ const DetailsStackScreen = ({ navigation}) => (
 </ThongBaoStack.Navigator>
 );
 
-const ExploreStackScreen = ({ navigation}) => (
-  <ExploreStack.Navigator screenOptions={{
+const ConfigStackScreen = ({ navigation }) => (
+  <ConfigStack.Navigator screenOptions={{
           headerShown: false,
           headerStyle: {
             backgroundColor: '#ecf0f3',
@@ -225,7 +225,7 @@ const ExploreStackScreen = ({ navigation}) => (
             marginLeft: -10
           }
       }}>
-          <ExploreStack.Screen name="ExploreTab" component={ExploreScreen} options={{
+          <ConfigStack.Screen name="ConfigTab" component={ConfigScreen} options={{
           title:'Cấu hình',
           headerLeft: () => (
             <View style={{ marginLeft: 10 }}>
@@ -234,7 +234,7 @@ const ExploreStackScreen = ({ navigation}) => (
             </View>
           )
           }} />
-  </ExploreStack.Navigator>
+  </ConfigStack.Navigator>
   );
 
   const styles = StyleSheet.create({

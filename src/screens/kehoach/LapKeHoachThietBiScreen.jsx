@@ -15,8 +15,8 @@ import { Loading } from '../../common/Loading';
 import { useNavigation } from '@react-navigation/native';
 import { Menu, Divider, Provider as PaperProvider } from 'react-native-paper';
 import { getVietNamDate} from '../../common/CommonFunction';
-import SearchLapKeHoachModal from '../../screens/kehoach/SearchLapKeHoachModal';
-import DelLapKeHoachModal from '../../screens/kehoach/DelLapKeHoachModal';
+import SearchLapKeHoachModal from './SearchLapKeHoachModal';
+import DelLapKeHoachModal from './DelLapKeHoachModal';
 import { GlobalContext } from '../../store/GlobalProvider';
 import { getListThietBiByID } from '../../api/Api_ThietBi';
 import { getListLapKeHoachByDonVi } from '../../api/Api_LapKeHoach';
@@ -167,7 +167,7 @@ const LapKeHoachThietBiScreen = ({ route, navigation }) => {
 
             <View style={{ height: 5 }}></View>
 
-            <View style={styles.cardView}>
+            <View style={styles.cardViewNull}>
               <Text style={styles.cardTitleH4}>{TenThietBiTitle}</Text>
             </View>
 
@@ -315,7 +315,7 @@ function FlatListItemLapKeHoach({ item }) {
                           onDismiss={closeMenu}
                           anchor={
                             <TouchableOpacity onPress={openMenu} style={styles.divTouchableOpacity}>
-                              <Icon name="dots-vertical" size={25} />
+                              <Icon name="dots-horizontal" size={25} />
                             </TouchableOpacity>
                           }
                           style={styles.menuMargin}>
@@ -332,19 +332,29 @@ function FlatListItemLapKeHoach({ item }) {
                       onSearch={handleSearch}
                       makh={selectedMakh}
                   />                                                               
-              </View>        
-              <View style={styles.viewContainerFlatlist}>
-                  <Text style={styles.titleFlatlist}>Chu kỳ:</Text>
-                  <Text style={styles.itemFlatlist}>{item.chuky} (tháng/lần)</Text>                   
-              </View>         
-              <View style={styles.viewContainerFlatlist}>
-                  <Text style={styles.titleFlatlist}>Số lượng:</Text>
-                  <Text style={styles.itemFlatlist}>{item.soluong || 0}</Text>
-              </View>                      
-              <View style={styles.viewContainerFlatlist}>
-                  <Text style={styles.titleFlatlist}>Năm:</Text>
-                  <Text style={styles.itemFlatlist}>{item.nam}</Text>
+              </View>    
+              <View style={styles.itemInfoRow}>
+                <View style={styles.itemColumn}>
+                  <Text style={styles.itemLabel}>Chu kỳ:</Text>
+                  <Text style={styles.itemValue}>{item.chuky} (tháng/lần)</Text>
+                </View>
+                <View style={styles.itemColumn}>
+                  <Text style={styles.itemLabel}>Số lượng:</Text>
+                  <Text style={styles.itemValue}>{item.soluong || 0}</Text>
+                </View>
               </View>
+
+              <View style={styles.itemInfoRow}>
+                <View style={styles.itemColumn}>
+                  <Text style={styles.itemLabel}>Năm:</Text>
+                  <Text style={styles.itemValue}>{item.nam}</Text>
+                </View>
+                <View style={styles.itemColumn}>
+                  <Text style={styles.itemLabel}>Ngày:</Text>
+                  <Text style={styles.itemValue}>{item.ngaycn ? getVietNamDate(item.ngaycn) : ''}</Text>
+                </View>
+              </View>
+              <View style={{ height: 5 }}></View>                  
               <View style={styles.viewContainerFlatlist}>
                   <Text style={styles.titleFlatlist}>Tháng bảo trì:</Text>
                   <Text style={styles.itemFlatlist}>                  
@@ -358,12 +368,7 @@ function FlatListItemLapKeHoach({ item }) {
                       </View>
                     ))}   
                   </Text>
-              </View>
-              <View style={styles.viewContainerFlatlist}>
-                  <Text style={styles.titleFlatlist}>Ngày:</Text>
-                  <Text style={styles.itemFlatlist}>{item.ngaycn ? getVietNamDate(item.ngaycn) : ''}</Text>
-              </View>                      
-
+              </View>             
           </View>
       </View>
   );
@@ -378,13 +383,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#ecf0f3',
     alignItems: 'center',
-    padding: 10,
+    padding: 7,
   },
   titleHeader: {
-    fontSize: 20,
+    flex: 1,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
-    marginLeft: 10,
+    textAlign: 'center',
   },
   buttonFilter: {
     backgroundColor: '#5caef8',
@@ -396,25 +401,33 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     padding: 2,
     borderRadius: 2,
-  },
- 
+  }, 
   buttonPlus: {
     backgroundColor: '#5cb85c', 
     marginLeft: 5,
     padding: 2,
     borderRadius: 2,
+  },  
+  cardViewNull : {       
+    backgroundColor: 'white',
+    width: width * 0.96, 
+    height: 'auto', 
+    marginTop: 5, 
+    marginBottom: 1, 
+    marginLeft: 'auto', 
+    marginRight: 'auto',
+    paddingBottom: 5,
+    paddingTop: 5,
   },
   cardView : {       
-      backgroundColor: 'white',
-      width: width * 0.96, 
-      height: 'auto', 
-      marginTop: 5, 
-      marginBottom: 5, 
-      marginLeft: 'auto', 
-      marginRight: 'auto',
-      borderRadius: width * 0.02,
-      paddingBottom: 5,
-      paddingTop: 5,
+    backgroundColor: 'white',
+    width: width * 0.96, 
+    height: 'auto', 
+    paddingTop: 5,  
+    paddingBottom: 5, 
+    marginLeft: 'auto', 
+    marginRight: 'auto',
+    marginBottom: 1, 
   },
   cardViewContainer: {
       width: width * 0.96, 
@@ -466,6 +479,24 @@ const styles = StyleSheet.create({
       justifyContent : 'flex-start',
       marginRight : 10,
       flex : 1,
+  },
+  itemInfoRow: {
+    flexDirection: 'row',
+    marginTop: 10,
+    marginLeft: 15,
+  },
+  itemColumn: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  itemLabel: {
+    fontSize: 14, 
+    fontStyle : 'italic',   
+  },
+  itemValue: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
   submitText: {    
       backgroundColor:'#428bca',

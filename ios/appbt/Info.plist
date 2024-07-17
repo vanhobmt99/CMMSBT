@@ -37,6 +37,8 @@
 	<string>YOUR TEXT</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>YOUR TEXT</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Using for making reminder for users</string>
 	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
 	<string>YOUR TEXT</string>
 	<key>NSCameraUsageDescription</key>

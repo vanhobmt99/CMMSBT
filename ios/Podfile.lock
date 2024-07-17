@@ -1181,6 +1181,8 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTImage
+  - RNSVG (15.4.0):
+    - React-Core
   - RNVectorIcons (10.1.0):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1290,6 +1292,7 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -1444,6 +1447,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   VisionCamera:
@@ -1530,6 +1535,7 @@ SPEC CHECKSUMS:
   RNPermissions: 6a1360ea53826cd3013fcf6e79dcf5dbf72f66b2
   RNReanimated: 6baa9e16c17a4420a8a9d671e0885532dfd06926
   RNScreens: 134a7511b12b8eb440b87aac21e36a71295d6024
+  RNSVG: cb24fb322de8c1ebf59904e7aca0447bb8dbed5a
   RNVectorIcons: 96e8c5c45609932bb2f8347e1c709bcca0e95654
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d

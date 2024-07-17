@@ -17,6 +17,9 @@ import { getVietNamDate } from '../../common/CommonFunction';
 import moment from 'moment';
 import SearchCongViecModal from './SearchCongViecModal';
 import DelCongViecModal from './DelCongViecModal';
+import TrangThaiModal from './TrangThaiModal';
+import NhanXetDanhGiaModal from './NhanXetDanhGiaModal';
+import NhacViecModal from './NhacViecModal';
 import { GlobalContext } from '../../store/GlobalProvider';
 import { 
   getListNhanVienTH,
@@ -98,7 +101,7 @@ const CongViecBaoTriScreen = () => {
     }
   };
 
-  const handleOpenModal = () => {
+  const handleOpenModal = () => {      
     setModalVisible(true);
   };
 
@@ -183,21 +186,26 @@ const CongViecBaoTriScreen = () => {
 
       <View style={styles.rowHeader}>
         <Icon name="chevron-left" color="#000" size={26} onPress={handleBack} />                     
-        <Text style={styles.titleHeader}>Công Việc Bảo Trì</Text>
+        <Text style={styles.titleHeader}>Công việc bảo trì</Text>
+
         <TouchableOpacity style={[styles.buttonFilter, {marginLeft: 5 }]}  onPress={handleOpenModal} title="Tìm kiếm">
           <Icon name="filter" color="#fff" size={22} />                
         </TouchableOpacity> 
+
         <TouchableOpacity style={[styles.buttonRefesh, {marginLeft: 5 }]} onPress={LoadRefreshData} title="Refresh Data">
           <Icon name="autorenew" color="#fff" size={22} />                
         </TouchableOpacity>      
+
         <TouchableOpacity style={[styles.buttonPlus, {marginLeft: 5 }]}  onPress={handlePlusItem} title="Thêm">
           <Icon name="plus" color="#fff" size={22} />                
-        </TouchableOpacity>                                                                
+        </TouchableOpacity>   
+
         <SearchCongViecModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
           onSearch={handleSearch} 
         />
+
       </View>
 
       <PaperProvider>
@@ -233,7 +241,20 @@ const FlatListItemCongViecBaoTri = ({ item }) => {
 
   const base_url = useContext(GlobalContext).url;
   const [modalDelVisible, setModalDelVisible] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedId, setSelectedId] = useState(0);
+
+  const [modalEditTTVisible, setModalEditTTVisible] = useState(false);
+  const [selectedTT, setSelectedTrangThai] = useState(0);
+
+  const [modalEditTDVisible, setModalEditTDVisible] = useState(false);
+  const [selectedTD, setSelectedTienDo] = useState(0);
+  const [selectedTDDG, setSelectedTienDoDG] = useState(0);
+  const [selectedCL, setSelectedChatLuong] = useState(0);
+  const [selectedNX, setSelectedNhanXet] = useState(null);
+
+  const [modalEditNVVisible, setModalEditNVVisible] = useState(false);
+  const [selectedNV, setSelectedNhacViec] = useState(null);
+  
   const [visible, setVisible] = useState(false);
   const [tenTrangThai, setTenTrangThai] = useState('');
   const [tenLoaiCV, setTenLoaiCV] = useState('');
@@ -332,8 +353,33 @@ const FlatListItemCongViecBaoTri = ({ item }) => {
   };
 
   const handleDeleteItem = (id) => {
+    closeMenu();
     setSelectedId(id);
     setModalDelVisible(true);
+  };
+
+  const handleEditTrangThaiItem = (id, trangthai) => {
+    closeMenu();
+    setSelectedId(id);
+    setSelectedTrangThai(trangthai);
+    setModalEditTTVisible(true);
+  };
+
+  const handleEditTienDoItem = (id, tiendo, tiendodg, chatluong, nhanxet) => {
+    closeMenu();
+    setSelectedId(id);
+    setSelectedTienDo(tiendo);
+    setSelectedTienDoDG(tiendodg);
+    setSelectedChatLuong(chatluong);
+    setSelectedNhanXet(nhanxet);
+    setModalEditTDVisible(true);
+  };
+
+  const handleEditNhacViecItem = (id, nhacviec) => {
+    closeMenu();
+    setSelectedId(id);
+    setSelectedNhacViec(nhacviec);
+    setModalEditNVVisible(true);
   };
 
   const handleEditItem = (id) => {
@@ -361,28 +407,93 @@ const FlatListItemCongViecBaoTri = ({ item }) => {
         noidung: item.noidung,
         ghichu: item.ghichu
       });
-  };  
+  };    
+
+  const handleBoPhanItem = (macv, tencv) => {
+    setVisible(false);
+    navigation.navigate("BoPhanScreen", { macv, tencv});
+  };    
+
+  const handleSearch = async (keyword, trangthai, loaicv, manvth, ngaybd, ngaykt) => {   
+    try {       
+      navigation.navigate("CongViecBaoTriScreen", { keyword, trangthai, loaicv, manvth, ngaybd, ngaykt });
+    } catch (error) {
+      console.error("Error storing data:", error);
+    }
+  };    
 
   return (
-    <TouchableOpacity style={styles.itemContainer}>      
+    <TouchableOpacity style={styles.itemContainer}>           
       <View style={styles.itemRow}>
         <View style = {styles.divFlexTen}>
           <Text style={styles.itemHeaderText}>{item.tencv}</Text> 
         </View> 
         <View style = {styles.divFlexOne}>                      
-          <Menu
+        <Menu
             visible={visible && selectedId === item.macv}
             onDismiss={closeMenu}
-            anchor={<TouchableOpacity onPress={() => openMenu(item.macv)}><Icon name="dots-vertical" color="#000" size={22} /></TouchableOpacity>}
+            anchor={
+                <TouchableOpacity onPress={() => openMenu(item.macv)}>
+                    <Icon name="dots-horizontal" color="#000" size={22} />
+                </TouchableOpacity>
+            }
             style={styles.menuMargin} >
 
-            <Menu.Item style={styles.menuItem} leadingIcon={() => <Icon name="account-edit" size={20} color="#000" />} onPress={() => handleEditItem(item.macv)} title="Sửa" />
+            <Menu.Item
+                style={styles.menuItem}
+                leadingIcon={() => <Icon name="account-edit" size={20} color="#000" />}
+                onPress={() => handleEditItem(item.macv)}
+                title="Sửa"
+            />
             <Divider style={styles.divider} />
-            <Menu.Item style={styles.menuItem} leadingIcon={() => <Icon name="delete" size={20} color="#000" />}  onPress={() => handleDeleteItem(item.macv)} title="Xóa" />
-            <Divider style={styles.divider} />
-            <Menu.Item style={styles.menuItem} leadingIcon={() => <Icon name="close" size={20} color="#000" />}  onPress={closeMenu} title="Đóng" />
 
-          </Menu>
+            <Menu.Item
+                style={styles.menuItem}
+                leadingIcon={() => <Icon name="eye-plus" size={20} color="#000" />}
+                onPress={() => handleBoPhanItem(item.macv, item.tencv)}
+                title="Chi tiết bộ phận"
+            />
+            <Divider style={styles.divider} />
+
+            <Menu.Item
+                style={styles.menuItem}
+                leadingIcon={() => <Icon name="autorenew" size={20} color="#000" />}
+                onPress={() => handleEditTrangThaiItem(item.macv, item.trangthai)}
+                title="Cập nhật trạng thái"
+            />
+            <Divider style={styles.divider} />
+
+            <Menu.Item
+                style={styles.menuItem}
+                leadingIcon={() => <Icon name="near-me" size={20} color="#000" />}
+                onPress={() => handleEditTienDoItem(item.macv, item.tiendo, item.tiendodg, item.chatluong, item.nhanxet)}
+                title="Cập nhật tiến độ"
+            />
+            <Divider style={styles.divider} />
+
+            <Menu.Item
+                style={styles.menuItem}
+                leadingIcon={() => <Icon name="bell" size={20} color="#000" />}
+                onPress={() => handleEditNhacViecItem(item.macv, item.nhacviec)}
+                title="Cập nhật nhắc việc"
+            />
+            <Divider style={styles.divider} />
+
+            <Menu.Item
+                style={styles.menuItem}
+                leadingIcon={() => <Icon name="delete" size={20} color="#000" />}
+                onPress={() => handleDeleteItem(item.macv)}
+                title="Xóa"
+            />
+            <Divider style={styles.divider} />
+
+            <Menu.Item
+                style={styles.menuItem}
+                leadingIcon={() => <Icon name="close" size={20} color="#000" />}
+                onPress={closeMenu}
+                title="Đóng"
+            />
+        </Menu>
         </View>
       </View>
       <View style={styles.itemInfoRow}>
@@ -415,11 +526,36 @@ const FlatListItemCongViecBaoTri = ({ item }) => {
           <Text style={styles.itemValue}>{tenTrangThai} - {item.tiendo}%</Text>
         </View>
       </View>
+
       <DelCongViecModal
         visible={modalDelVisible}
-        onClose={() => setModalDelVisible(false)}
+        onClose={() => setModalDelVisible(false)}        
+        onSearch={handleSearch}
         macv={selectedId}
-        fetchData={() => fetchData(keyword, trangthai, loaicv, manvth, ngaybd, ngaykt)}
+      />
+
+      <TrangThaiModal
+        visible={modalEditTTVisible}
+        onClose={() => setModalEditTTVisible(false)}
+        macv={selectedId}
+        trangthai={selectedTT}
+      />
+
+      <NhanXetDanhGiaModal
+        visible={modalEditTDVisible}
+        onClose={() => setModalEditTDVisible(false)}
+        macv={selectedId}
+        tiendo={selectedTD}
+        tiendodg={selectedTDDG}
+        chatluong={selectedCL}
+        nhanxet={selectedNX}
+      />
+
+      <NhacViecModal
+        visible={modalEditNVVisible}
+        onClose={() => setModalEditNVVisible(false)}
+        macv={selectedId}
+        nhacviec={selectedNV}
       />
     </TouchableOpacity>
   );
@@ -427,14 +563,14 @@ const FlatListItemCongViecBaoTri = ({ item }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1,  
     backgroundColor: '#dcdcdc',
   },
   rowHeader: {
     flexDirection: 'row',
     backgroundColor: '#ecf0f3',
     alignItems: 'center',
-    padding: 5,
+    padding: 7,
   },
   titleHeader: {
     flex: 1,
@@ -443,32 +579,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonFilter: {
-    padding: 5,
-    backgroundColor: '#007bff',
-    borderRadius: 5,
+    backgroundColor: '#5caef8',
+    padding: 2,      
+    borderRadius: 2,
   },
   buttonRefesh: {
-    padding: 5,
-    backgroundColor: '#28a745',
-    borderRadius: 5,
-  },
+    backgroundColor: '#5bc0de',
+    marginLeft: 5,
+    padding: 2,
+    borderRadius: 2,
+  }, 
   buttonPlus: {
-    padding: 5,
-    backgroundColor: '#ffc107',
-    borderRadius: 5,
+    backgroundColor: '#5cb85c', 
+    marginLeft: 5,
+    padding: 2,
+    borderRadius: 2,
   },
   itemContainer: {    
     backgroundColor: 'white',
-    padding: 15,
+    padding: 10,
+    marginTop: 10,
     width: width * 0.96, 
-    height: 'auto',       
-    margin: 5, 
-    marginLeft: 'auto', 
-    marginRight: 'auto',
     borderRadius: width * 0.02,
+    height: 'auto',       
+    marginLeft: 'auto', 
+    marginRight: 'auto', 
   },
   divFlexTen: {
-     flex: 10,
+     flex: 11,
   },
   divFlexOne: {
       flexDirection: 'row',       
@@ -476,7 +614,7 @@ const styles = StyleSheet.create({
   },  
   itemRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',    
+    justifyContent: 'space-between',      
   },
   itemHeaderText: {
     fontSize: 16,
@@ -496,17 +634,26 @@ const styles = StyleSheet.create({
   itemValue: {
     fontSize: 14,
   },
-  cardView : {       
+  cardViewNull : {       
     backgroundColor: 'white',
     width: width * 0.96, 
     height: 'auto', 
     marginTop: 5, 
-    marginBottom: 5, 
+    marginBottom: 1, 
     marginLeft: 'auto', 
     marginRight: 'auto',
-    borderRadius: width * 0.02,
     paddingBottom: 5,
     paddingTop: 5,
+  },
+  cardView : {       
+    backgroundColor: 'white',
+    width: width * 0.96, 
+    height: 'auto', 
+    paddingTop: 5,  
+    paddingBottom: 5, 
+    marginLeft: 'auto', 
+    marginRight: 'auto',
+    marginBottom: 1, 
   },
   cardViewContainer: {
       width: width * 0.96, 

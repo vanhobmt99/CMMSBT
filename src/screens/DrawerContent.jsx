@@ -159,7 +159,7 @@ export function DrawerContent(props) {
                                 />
                             )}
                             label="Cấu hình"
-                            onPress={() => {props.navigation.navigate('Explore')}}
+                            onPress={() => {props.navigation.navigate('Config')}}
                         />
                         <DrawerItem 
                             icon={({color, size}) => (

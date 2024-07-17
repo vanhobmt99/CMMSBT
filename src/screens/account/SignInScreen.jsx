@@ -205,10 +205,6 @@ const SignInScreen = ({navigation}) => {
             </Animatable.View>
             }
             
-
-            <TouchableOpacity>
-                <Text style={{color: '#2755ab', marginTop:15}}>Quên mật khẩu?</Text>
-            </TouchableOpacity>
             <View style={styles.button}>
                 <TouchableOpacity
                     style={styles.signIn}
@@ -223,19 +219,7 @@ const SignInScreen = ({navigation}) => {
                     }]}>Đăng nhập</Text>
                 </LinearGradient>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('SignUpScreen')}
-                    style={[styles.signIn, {
-                        borderColor: '#2755ab',
-                        borderWidth: 1,
-                        marginTop: 15
-                    }]}
-                >
-                    <Text style={[styles.textSign, {
-                        color: '#2755ab'
-                    }]}>Đăng ký</Text>
-                </TouchableOpacity>
+                
             </View>
         </Animatable.View>
       </View>

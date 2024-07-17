@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SelectList } from 'react-native-dropdown-select-list';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RichEditor, RichToolbar, actions } from 'react-native-pell-rich-editor';
 import moment from 'moment';
 import Toast from 'react-native-toast-message';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
@@ -99,6 +100,8 @@ const EditThietBiScreen = ({ route, navigation }) => {
   const [currentLongitude, setCurrentLongitude] = useState(0);
   const [currentLatitude, setCurrentLatitude] = useState(0);
   const [locationStatus, setLocationStatus] = useState('');
+
+  const richText = useRef(null);
 
   const handleNumberChange = (value, setter) => {
       if (/^\d+$/.test(value) || value === '') {
@@ -348,30 +351,13 @@ const EditThietBiScreen = ({ route, navigation }) => {
   };
 
   const requestCameraPermission = async () => {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: 'Camera Permission',
-          message: 'This app needs access to your camera to take photos and videos.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    } else if (Platform.OS === 'ios') {
-      const response = await fetch('https://apple.com');
-      if (response.ok) {
-        return true;
-      } else {
-        Alert.alert('Permission Denied', 'Camera permissions are required to take photos and videos.');
-        return false;
-      }
-    }
-    return false;
+    const permission = Platform.select({
+      android: PERMISSIONS.ANDROID.CAMERA,
+      ios: PERMISSIONS.IOS.CAMERA,
+    });
+    return await requestPermission(permission);
   };
-  
+
   const openCamera = async (type) => {
     let options = {
       mediaType: type,
@@ -386,7 +372,7 @@ const EditThietBiScreen = ({ route, navigation }) => {
         skipBackup: true,
       },
     };
-  
+
     const cameraGranted = await requestCameraPermission();
     if (cameraGranted) {
       setIsLoading(true);
@@ -396,8 +382,8 @@ const EditThietBiScreen = ({ route, navigation }) => {
         if (response.didCancel) {
           console.log('User cancelled image picker');
         } else if (response.errorCode) {
-          console.log('ImagePicker Error: ', response.errorCode);
-        } else if (response.assets && response.assets.length > 0) {
+          console.log('ImagePicker Error: ', response.errorMessage);
+        } else {
           console.log('Captured URI: ', response.assets[0].uri);
           setFilePath(response.assets[0]);
         }
@@ -758,7 +744,7 @@ const EditThietBiScreen = ({ route, navigation }) => {
                       closeMenu();
                     }}
                     title="Camera"
-                    leadingIcon={() => <Icon name="camera" size={20} />}
+                    leadingIcon={() => <Icon name="camera-plus" size={20} />}
                   />
                   <Divider style={styles.divider} />
                   <Menu.Item
@@ -1084,18 +1070,39 @@ const EditThietBiScreen = ({ route, navigation }) => {
                         style={styles.textInput}
                         //keyboardType="numeric"
                       />
-                    </View>                    
+                    </View>         
+
                     <View style={styles.inputGroup}>
                       <Text style={styles.label}>Nội dung</Text>
-                      <TextInput
-                        value={thongSoThietBi}
-                        onChangeText={setNoiDung}
-                        placeholder="Nhập nội dung"
-                        multiline={true}
-                        numberOfLines={4}
-                        style={styles.textInput}
-                      />
+                      <View style={styles.richTextContainer}>
+                        <RichEditor                                        
+                          ref={richText}
+                          onChange={setNoiDung}
+                          maxLength={200}
+                          editorStyle={styles.richEditor}
+                          placeholder="Nhập nội dung"
+                          initialContentHTML={thongSoThietBi}                                          
+                          androidHardwareAccelerationDisabled={true}
+                          style={styles.richTextEditorStyle}
+                        />
+                        <RichToolbar
+                          editor={richText}
+                          selectedIconTint="#873c1e"
+                          iconTint="#312921"
+                          actions={[
+                          actions.setBold,
+                          actions.setItalic,
+                          actions.insertBulletsList,
+                          actions.insertOrderedList,
+                          actions.insertLink,
+                          actions.setStrikethrough,
+                          actions.setUnderline,
+                         ]}
+                          style={styles.richTextToolbarStyle}
+                        />
+                      </View>                       
                     </View>
+
                     <View style={styles.inputGroup}>
                       <Text style={styles.label}>Ghi chú</Text>
                       <TextInput
@@ -1275,6 +1282,30 @@ const styles = StyleSheet.create({
   anchor: {    
     justifyContent: 'center',
     alignItems: 'center',   
+  },
+  richTextContainer: {
+    display: "flex",
+    flexDirection: "column-reverse",
+    width: "99%",
+  },
+
+  richTextEditorStyle: {
+    borderWidth: 1,
+    borderColor: "#ccaf9b",    
+    fontSize: 14,
+  },
+
+  richTextToolbarStyle: {
+    backgroundColor: "#c6c3b3",
+    borderColor: "#c6c3b3",
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderWidth: 1,
+  },
+
+  errorTextStyle: {
+    color: "#FF0000",
+    marginBottom: 10,
   },
 });
 

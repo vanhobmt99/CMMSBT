@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 10,
     paddingRight: 10, 
-    marginTop: 10
+    marginTop: 8
   },
   text_child: {
     color: '#000',
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     marginTop: 5
   },
   padding_space: {     
-    marginTop: 5
+    marginTop: 3
   },
   bottomDrawerSection: {    
     borderTopColor: '#f4f4f4',

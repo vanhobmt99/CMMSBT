@@ -1,7 +1,9 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { FlatList, Button, Text, View, StyleSheet, StatusBar } from 'react-native';
+import { FlatList, Button, Text, View, StyleSheet, StatusBar, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Loading} from '../../common/Loading';
+
+const { width } = Dimensions.get('window');
 
 const ThongBaoScreen = ({navigation}) => {
 
@@ -87,14 +89,12 @@ const styles = StyleSheet.create({
   },
   notificationItem: {
     padding: 10,
-    fontSize: 18,  
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    fontSize: 18,
+    borderRadius: width * 0.02,
     backgroundColor: '#fff',
-    marginBottom: 7,
+    marginBottom: 6,
     marginLeft: 10,
-    marginRight: 10,
-    borderRadius: 10
+    marginRight: 10,   
   },
   viewContainerFlatlist : {
     flexDirection : 'row',

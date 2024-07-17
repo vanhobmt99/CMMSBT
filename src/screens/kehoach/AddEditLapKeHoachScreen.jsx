@@ -182,7 +182,7 @@ const AddEditLapKeHoachScreen = ({ route, navigation }) => {
             </View>
                
             <View style={{ height: 5 }}></View>
-            <View style={styles.cardView}>
+            <View style={styles.cardViewNull}>
                 <Text style={styles.cardTitleH4}>{TenThietBiTitle}</Text>
             </View>
             {isLoading ? (
@@ -310,17 +310,26 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
     },
-    cardView : {       
+    cardViewNull : {       
         backgroundColor: 'white',
         width: width * 0.96, 
         height: 'auto', 
         marginTop: 5, 
-        marginBottom: 5, 
+        marginBottom: 1, 
         marginLeft: 'auto', 
         marginRight: 'auto',
-        borderRadius: width * 0.02,
         paddingBottom: 5,
         paddingTop: 5,
+    },
+    cardView : {       
+        backgroundColor: 'white',
+        width: width * 0.96, 
+        height: 'auto', 
+        paddingTop: 5,  
+        paddingBottom: 5, 
+        marginLeft: 'auto', 
+        marginRight: 'auto',
+        marginBottom: 1, 
     },
     cardTitleH4 : {
         paddingLeft: 10, 

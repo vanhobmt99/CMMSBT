@@ -16,8 +16,8 @@ import {
 
 import { DrawerContent } from  './src/screens/DrawerContent';
 import MainTabScreen from './src/screens/MainTabScreen';
-import SupportScreen from './src/screens/SupportScreen';
-import SettingsScreen from './src/screens/SettingsScreen';
+import SupportScreen from './src/screens/home/SupportScreen';
+import ConfigScreen from './src/screens/home/ConfigScreen';
 import AddThietBiScreen from './src/screens/thietbi/AddThietBiScreen';
 import EditThietBiScreen from './src/screens/thietbi/EditThietBiScreen';
 import CauTrucThietBiScreen from './src/screens/cautruc/CauTrucThietBiScreen';
@@ -26,7 +26,7 @@ import LapKeHoachThietBiScreen from './src/screens/kehoach/LapKeHoachThietBiScre
 import AddEditLapKeHoachScreen from './src/screens/kehoach/AddEditLapKeHoachScreen';
 import CongViecBaoTriScreen from './src/screens/congviec/CongViecBaoTriScreen';
 import AddEditCongViecScreen from './src/screens/congviec/AddEditCongViecScreen';
-import BookmarkScreen from './src/screens/BookmarkScreen';
+import BoPhanScreen from './src/screens/congviec/BoPhanScreen';
 import { AuthContext } from './src/components/context';
 import RootStackScreen from './src/screens/RootStackScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -250,8 +250,7 @@ const App = () => {
             <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
               <Drawer.Screen name="HomeDrawer" component={MainTabScreen} options = {navOptionHandler} />
               <Drawer.Screen name="SupportScreen" component={SupportScreen} options = {navOptionHandler}/>
-              <Drawer.Screen name="SettingsScreen" component={SettingsScreen} options = {navOptionHandler} />
-              <Drawer.Screen name="BookmarkScreen" component={BookmarkScreen} options = {navOptionHandler}/>
+              <Drawer.Screen name="ConfigScreen" component={ConfigScreen} options = {navOptionHandler} />
               <Drawer.Screen name="AddThietBiScreen" component={AddThietBiScreen} options = {navOptionHandler} />
               <Drawer.Screen name="EditThietBiScreen" component={EditThietBiScreen} options = {navOptionHandler} />
               <Drawer.Screen name="CauTrucThietBiScreen" component={CauTrucThietBiScreen} options = {navOptionHandler} />
@@ -260,6 +259,7 @@ const App = () => {
               <Drawer.Screen name="AddEditLapKeHoachScreen" component={AddEditLapKeHoachScreen} options = {navOptionHandler} />
               <Drawer.Screen name="CongViecBaoTriScreen" component={CongViecBaoTriScreen} options = {navOptionHandler}/>
               <Drawer.Screen name="AddEditCongViecScreen" component={AddEditCongViecScreen} options = {navOptionHandler}/>
+              <Drawer.Screen name="BoPhanScreen" component={BoPhanScreen} options = {navOptionHandler}/>
             </Drawer.Navigator>
           ): (
             <RootStackScreen/>

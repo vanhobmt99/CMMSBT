@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext, useCallback, useRef } from 'rea
 import { View, 
     Text,
     Alert, 
-    TextInput, 
+    TextInput,
+    Button, 
     TouchableOpacity, 
     StyleSheet, 
     ScrollView, 
@@ -23,7 +24,10 @@ import {
   getListDonViTinh,
   getListNhanVienTH,
   getListNhanVienKT, 
-  postPutCongViecBaoTri  
+  postPutCongViecBaoTri,
+  getListByMacv,
+  postPutCTCV, 
+  deleteCTCVByID, 
  } from '../../api/Api_CongViec';
 
 const { width } = Dimensions.get('window');
@@ -33,6 +37,21 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
   const base_url = useContext(GlobalContext).url;
   const [isLoading, setIsLoading] = useState(false);
 
+  const [macv, setMaCV] = useState(0);
+  const [matb, setMaTB] = useState(0);
+  const [tencv, setTenCV] = useState(null);
+  const [loaicv, setLoaiCV] = useState(0);
+  const [loaikh, setLoaiKH] = useState(0);
+  const [ngaybd, setNgayBD] = useState(null);
+  const [ngaykt, setNgayKT] = useState(null);
+  const [trangthai, setTrangThai] = useState(0);
+  const [tiendo, setTienDo] = useState(0);
+  const [douutien, setDoUuTien] = useState(0);
+  const [manvth, setMaNVTH] = useState(0);
+  const [manvkt, setMaNVKT] = useState(0);
+  const [noidung, setNoiDung] = useState(null);
+  const [ghichu, setGhiChu] = useState(null);  
+
   const [tenthietbi, setTenThietBi] = useState('');
   const [tenloaicv, setTenLoaiCV] = useState('');
   const [tentrangthai, setTenTrangThai] = useState('');
@@ -40,43 +59,35 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
   const [tendouutien, setTenDoUuTien] = useState('');
   const [tennvth, setTenNhanVienTH] = useState('');
   const [tennvkt, setTenNhanVienKT] = useState('');
+  const [tendvt, setTendvt] = useState('');
 
   const [isDatePickerVisible1, setDatePickerVisibility1] = useState(false);
   const [isDatePickerVisible2, setDatePickerVisibility2] = useState(false);
 
-  const [datathietbi, setDataThietBi] = useState([]);  
-  const [dataloaicv, setDataLoaiCV] = useState([]);
-  const [datatt, setDataTrangThai] = useState([]);
-  const [dataloaikh, setDataLoaiKH] = useState([]);
-  const [datadouutien, setDataDoUuTien] = useState([]);
+  const [datathietbi, setDataThietBi] = useState([]);
   const [datanvth, setDataNhanVienTH] = useState([]);
-  const [datanvkt, setDataNhanVienKT] = useState([]);
-  const [datadvt, setDataDVT] = useState([]);
+  const [datanvkt, setDataNhanVienKT] = useState([]); 
+  const [selectedTab, setSelectedTab] = useState('tab1');
 
-  const [formState, setFormState] = useState({
-      macv: 0,
-      matb: 0,
-      tencv: null,
-      loaicv: 0,
-      loaikh: 0,
-      ngaybd: null,
-      ngaykt: null,
-      trangthai: 0,
-      tiendo: 0,
-      douutien: 0,
-      manvth: 0,
-      manvkt: 0,
-      noidung: null,
-      ghichu: null
-  }); 
+  // Chi tiết bộ phận
+  const [id, setId] = useState(0);
+  const [tenct, setTenChiTiet] = useState(null);
+  const [dvt, setDVT] = useState(null);
+  const [sl, setSoLuong] = useState(1);
+  const [quycach, setQuyCach] = useState(null); 
+  const [datadvt, setDatadvt] = useState([]); 
 
-  const handleChange = (name, value) => {
-    setFormState(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+  const [tableData, setTableData] = useState({
+    header: ['', '', '', 'Tên chi tiết', 'ĐVT', 'SL', 'Quy cách'],
+    rows: [],
+  });
+
+  const handleNumberChange = (value, setter) => {
+    if (/^\d+$/.test(value) || value === '') {
+        setter(value);
+    }
   };
-  
+
   const showDatePicker = (setter) => setter(true);
   const hideDatePicker = (setter) => setter(false);
 
@@ -97,15 +108,7 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
     return date ? `${day}/${month}/${year}` : null;
   };  
 
-  const richText = useRef();
-
-  const richTextNoiDungHandle = useCallback((descriptionText) => {
-    if (descriptionText) {
-      handleChange('noidung', descriptionText);
-    } else {
-      handleChange('noidung', "");
-    }
-  }, []);
+  const richText = useRef(null);
 
   useEffect(() => {
     if (route.params) {
@@ -138,32 +141,28 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
       setTenLoaiKH(tenloaikh);
       setTenDoUuTien(tendouutien);
       setTenNhanVienTH(tennvth);
-      setTenNhanVienKT(tennvkt);
+      setTenNhanVienKT(tennvkt);     
 
-      setFormState({
-        macv,
-        matb,
-        tentb,
-        tencv,
-        loaicv,
-        tenloaicv,
-        loaikh,
-        tenloaikh,
-        ngaybd,
-        ngaykt,
-        trangthai,
-        tentrangthai,      
-        douutien,
-        tendouutien,
-        manvth,
-        tennvth,
-        manvkt,
-        tennvkt,
-        noidung,
-        ghichu
-      });
+      setMaCV(macv);
+      setMaTB(matb);
+      setTenCV(tencv);
+      setLoaiCV(loaicv);
+      setLoaiKH(loaikh);
+      setNgayBD(ngaybd);
+      setNgayKT(ngaykt);
+      setTrangThai(trangthai);
+      setTienDo(tiendo);
+      setDoUuTien(douutien);
+      setMaNVTH(manvth);
+      setMaNVKT(manvkt);
+      setNoiDung(noidung);
+      setGhiChu(ghichu);
+
+      //Load edit chi tiết công việc    
+      fetchCTCVByMaCV(macv);
+
     }
-  }, [route.params]);
+  }, [route.params, datadvt]);
 
   const handleBack = () => {
     try {
@@ -186,8 +185,7 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
   };
 
   const handleSubmit = async () => {
-    
-    if (!formState.tencv) {
+    if (!tencv) {
       Toast.show({
         type: 'error',
         text1: 'Vui lòng điền đầy đủ các thông tin',
@@ -196,26 +194,43 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
       setShowDescError(true);
       return;
     }
-
+  
     try {
-      setIsLoading(true);            
-      const formData = new FormData();
+      setIsLoading(true);
+  
+      // Create formData for CongViecBaoTri
+      const formDataCongViec = new FormData();
+      formDataCongViec.append('macv', getValidNumber(macv));
+      formDataCongViec.append('matb', getValidNumber(matb));
+      formDataCongViec.append('tencv', getValidString(tencv));
+      formDataCongViec.append('loaicv', getValidNumber(loaicv));
+      formDataCongViec.append('loaikh', getValidNumber(loaikh));
+      formDataCongViec.append('ngaybd', getValidString(getFormattedDate(ngaybd)));
+      formDataCongViec.append('ngaykt', getValidString(getFormattedDate(ngaykt)));
+      formDataCongViec.append('trangthai', getValidNumber(trangthai));
+      formDataCongViec.append('douutien', getValidNumber(douutien));
+      formDataCongViec.append('manvth', getValidNumber(manvth));
+      formDataCongViec.append('manvkt', getValidNumber(manvkt));
+      formDataCongViec.append('noidung', getValidString(noidung));
+      formDataCongViec.append('ghichu', getValidString(ghichu));
+  
+      // Create JavaScript object for ChiTietCongViec
+      const chiTietCongViec = tableData.rows.map(row => ({
+          id: getValidNumber(row[0]),
+          macv: getValidNumber(row[1]),
+          tenct: getValidString(row[3]),
+          dvt: getValidNumber(row[2]),
+          sl: getValidNumber(row[5]),
+          quycach: getValidString(row[6]),
+          duphong: null,
+          baoduong: null,
+          chuky: null,
+      }));
 
-      formData.append('matb', getValidNumber(formState.matb));
-      formData.append('tencv', getValidString(formState.tencv));
-      formData.append('loaicv', getValidNumber(formData.loaicv));
-      formData.append('loaikh', getValidNumber(formData.loaikh));
-      formData.append('ngaybd', getFormattedDate(formData.ngaybd));
-      formData.append('ngaykt', getFormattedDate(formData.ngaykt));
-      formData.append('trangthai', getValidNumber(formData.trangthai));
-      formData.append('douutien', getValidNumber(formData.douutien));
-      formData.append('manvth', getValidNumber(formData.manvth));
-      formData.append('manvkt', getValidNumber(formData.manvkt));
-      formData.append('noidung', getValidString(formState.noidung));
-      formData.append('ghichu', getValidString(formState.ghichu));
-      
-      const response = await postPutCongViecBaoTri(base_url, formData);
-      if (response?.resultCode) {
+      const responseCongViec = await postPutCongViecBaoTri(base_url, formDataCongViec);  
+      const responseCTCV = await postPutCTCV(base_url, chiTietCongViec);
+  
+      if (responseCongViec?.resultCode || responseCTCV?.resultCode) {
         resetFormState();
         navigation.navigate("CongViecBaoTriScreen", { 
           keyword: "",
@@ -224,10 +239,10 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
           manvth: [],
           ngaybd: "",
           ngaykt: ""
-         });
+        });
       } else {
-        console.log("Device data:", formData);
-        console.log("Response:", response);
+        console.error("Device data:", formDataCongViec, chiTietCongViec);
+        console.error("Response:", responseCongViec, responseCTCV);
         Alert.alert("Error", "Lỗi trong khi cập nhật dữ liệu");
       }
     } catch (error) {
@@ -239,29 +254,23 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
   };
 
   const resetFormState = () => {
-      setFormState({
-        macv: 0,
-        matb: 0,
-        tentb: null,
-        tencv: null,
-        loaicv: 0,
-        tenloaicv: null,
-        loaikh: 0,
-        tenloaikh: null,
-        ngaybd: null,
-        ngaykt: null,
-        trangthai: 0,
-        tentrangthai: null,       
-        douutien: 0,
-        tendouutien: null,
-        manvth: 0,
-        tennvth: null,        
-        manvkt: 0,
-        tennvkt: null,
-        noidung: null,
-        ghichu: null
-      });
 
+      setMaCV(0);
+      setMaTB(0);
+      setTenCV(null);
+      setLoaiCV(0);
+      setLoaiKH(0);
+      setNgayBD(null);
+      setNgayKT(null);
+      setTrangThai(0);
+      setTienDo(0);
+      setDoUuTien(0);
+      setMaNVTH(0);
+      setMaNVKT(0);
+      setNoiDung(null);
+      setGhiChu(null);
+
+      // Reset individual state variables
       setTenThietBi('');
       setTenLoaiCV('');
       setTenTrangThai('');
@@ -270,6 +279,18 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
       setTenNhanVienTH('');
       setTenNhanVienKT('');
 
+      // Reset SelectList state
+      setTenChiTiet(null);
+      setDVT(0);     
+      setSoLuong(1);
+      setQuyCach(null);
+      setTendvt('');      
+
+      // Reset table data
+      setTableData({
+        header: ['', '', '', 'Tên chi tiết', 'ĐVT', 'SL', 'Quy cách'],
+        rows: [],
+      });
   };
 
   // Load List All Thiết Bị By Đơn Vị
@@ -323,9 +344,9 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
     try {
         const response = await getListDonViTinh(base_url);
         if (response && response.resultCode === true) {
-           setDataDVT(response.data);            
+          setDatadvt(response.data);            
         } else {
-           setDataDVT([]);
+          setDatadvt([]);
         }
     } catch (error) {
         console.error("Error fetching đơn vị tính: ", error);
@@ -360,20 +381,62 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
     } catch (error) {
        console.error("Error fetching đơn vị tính: ", error);
     }
+  };  
+
+  // Load List All Chi Tiết Công Việc By MaCV
+  const fetchCTCVByMaCV = async (_macv) => {
+    try {
+        const response = await getListByMacv(base_url, parseInt(_macv, 10));
+        if (response?.resultCode === true) {
+          const newRow = response.data.map(item => {
+            const unit  = datadvt.find(dvtItem => parseInt(dvtItem.key, 10) === parseInt(item.dvt, 10));
+            return [
+                item.id || 0,
+                item.macv || 0,
+                item.dvt || 0,
+                item.tenct || '',
+                unit ? unit.value : '',
+                item.sl || 1,
+                item.quycach || ''
+            ];
+          });
+
+            setTableData(prevTableData => ({
+                ...prevTableData,
+                rows: newRow // Replace the existing rows with fetched rows
+            }));
+
+        } else {
+            setTableData({
+              header: ['', '', '', 'Tên chi tiết', 'ĐVT', 'SL', 'Quy cách'],
+              rows: [],
+            });
+        }
+    } catch (error) {
+        console.error("Error fetching chi tiết công việc: ", error);
+    }
   };
 
   const fetchData = async () => {
     setIsLoading(true);
-    await Promise.all([
-      fetchThietBi(),
-      fetchNhanVienTH(),
-      fetchNhanVienKT()
-    ]);
-    setIsLoading(false);
+    const macv = parseInt(route.params.macv, 10);
+    try {
+        await Promise.all([
+            fetchThietBi(),
+            fetchNhanVienTH(),
+            fetchNhanVienKT(),
+            fetchDonViTinh(),
+            fetchCTCVByMaCV(macv > 0 ? macv : 0),
+        ]);
+    } catch (error) {
+        console.error("Error fetching data: ", error);
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchData();
+      fetchData();
   }, []);
 
   const getDefaultOption = (id, data, defaultText = 'Tất cả') => {    
@@ -385,6 +448,65 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
       }
     }
   } 
+  
+  const handleAddRow = () => {
+    // Validation checks
+    if (!tenct || !dvt || (!sl || isNaN(sl) || parseInt(sl, 10) <= 0) || !quycach) {
+        Alert.alert('Thông báo', 'Tên chi tiết, đơn vị tính, số lượng >0 và quy cách không được để trống!');
+        return;
+    }   
+
+    const unit = datadvt.find(dvtItem => parseInt(dvtItem.key, 10) === parseInt(dvt, 10));
+    const unitName = unit ? unit.value : '';
+    
+    const newRow = [id, macv, dvt, tenct, unitName, sl, quycach];
+    
+    setTableData(prevTableData => ({
+        ...prevTableData,
+        rows: [...prevTableData.rows, newRow]
+    }));
+  };
+
+  const handleDelete = async (_id, rowIndex) => {
+    try {
+        const response = await deleteCTCVByID(base_url, _id);
+        if (response.resultCode) {          
+            setTableData(prevTableData => ({
+                ...prevTableData,
+                rows: prevTableData.rows.filter((_, index) => index !== rowIndex)
+            }));
+        }
+    } catch (error) {
+        Alert.alert('Xóa lỗi', 'Đã có lỗi xảy ra trong quá trình xóa, vui lòng thử lại sau');
+    }
+  };
+
+  const removeRow = (rowIndex, id) => {
+    if (id !== 0) {
+      Alert.alert(
+        'Xác nhận xóa',
+        'Bạn có chắc chắn muốn xóa mục này?',
+        [
+          {
+            text: 'Hủy',
+            onPress: () => console.log('Xóa đã bị hủy'),
+            style: 'cancel'
+          },
+          {
+            text: 'Xóa',
+            onPress: () => handleDelete(id, rowIndex),
+            style: 'destructive'
+          }
+        ],
+        { cancelable: false } 
+      );
+    } else {        
+        setTableData(prevTableData => ({
+            ...prevTableData,
+            rows: prevTableData.rows.filter((_, index) => index !== rowIndex)
+        }));
+    }
+  };
 
   const InputGroup = ({ label, required, value, onChangeText, placeholder, multiline, numberOfLines, keyboardType }) => (
     <View style={styles.inputGroup}>
@@ -404,32 +526,101 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
     </View>
   );    
 
+  const renderTab = (tabkey, tabName) => (
+    <TouchableOpacity
+      key={tabkey}
+      style={[
+        styles.tab,
+        { 
+          borderBottomWidth: 2,                  
+          borderBottomColor: selectedTab === tabkey ? '#2196F3' : 'transparent'  // Set border bottom color
+        }
+      ]}
+      onPress={() => setSelectedTab(tabkey)}
+    >
+      <Text style={{color: selectedTab === tabkey ? '#2196F3' : '#000000', fontSize: 16, fontWeight: 'bold' }}>{tabName}</Text>
+    </TouchableOpacity>
+  );
+
+  const TableRow = ({ row, rowIndex, removeRow }) => {
+    const id = row[0]; // Assuming the id is the first element in the row array
+  
+    return (
+      <View style={[styles.tableRow, rowIndex % 2 === 0 ? styles.tableRowEven : styles.tableRowEven]}>
+        {row.slice(3).map((cell, cellIndex) => ( // Skip row[0], row[1], row[2] by slicing the array starting from index 2
+          <View
+          key={cellIndex + 3}
+          style={[
+              styles.tableCell,
+              { width: cellWidths[cellIndex + 3] },
+              (cellIndex === 1 || cellIndex === 2) && styles.centeredCell, 
+          ]}
+         >
+            <Text style={styles.tableCellText}>{cell}</Text>
+          </View>
+        ))}
+        <View style={[styles.tableCell, styles.removeCell]}>
+          <TouchableOpacity onPress={() => removeRow(rowIndex, id)}>
+            <Text style={styles.removeButton}>X</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  const Table = ({ data, removeRow }) => (
+    <ScrollView horizontal>
+      <View style={styles.table}>
+        <View style={styles.tableRow}>
+          {data.header.slice(3).map((header, index) => (
+            <View key={index + 3} style={[styles.tableCell, styles.tableHeader, { width: cellWidths[index + 3] }]}>
+              <Text style={styles.tableHeaderText}>{header}</Text>
+            </View>
+          ))}
+          <View style={[styles.tableCell, styles.tableHeader, { width: 30 }]}>
+            <Text style={styles.tableHeaderText}></Text>
+          </View>
+        </View>
+        {data.rows.map((row, rowIndex) => (
+          <TableRow key={rowIndex} row={row} rowIndex={rowIndex} removeRow={removeRow} />
+        ))}
+      </View>
+    </ScrollView>
+  );    
+
   return (
       <View style={styles.container}>
           <View style={styles.rowHeader}>
               <Icon name="chevron-left" color="#000" size={26} onPress={handleBack} />
-              <Text style={styles.titleHeader}>Công Việc Bảo Trì</Text>
+              <Text style={styles.titleHeader}>Công việc bảo trì</Text>
           </View>
-          {isLoading ? (
-              <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color="#0000ff" />
-                  <Text>Loading...</Text>
-              </View>
-          ) : (
+            {isLoading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                    <Text>Loading...</Text>
+                </View>
+            ) : (
               <>
                   <ScrollView style={{ marginBottom: 50 }}>
-                      <View style={styles.cardView}>
-                          <View style={styles.cardViewContainer}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsContainer}>
+                      {renderTab('tab1', 'Thông tin')}
+                      {renderTab('tab2', 'Công việc thực hiện')}
+                      {renderTab('tab3', 'Bộ phận')}
+                    </ScrollView>
+                    <View>
+                      {selectedTab === 'tab1' && 
+                        <View style={[styles.cardView, { marginTop: -5 }]}>
+                               <View style={styles.cardViewContainer}>
                             <View style={styles.inputGroup}>
                               <View style={styles.labelContainer}>
                                 <Text style={styles.label}>Thiết bị:</Text>
                                 <Text style={styles.required}>(*)</Text> 
                               </View>
                               <SelectList
-                                setSelected={setDataThietBi}
+                                setSelected={setMaTB}
                                 data={datathietbi}
-                                defaultOption={getDefaultOption(formState.matb, datathietbi, tenthietbi)}                           
-                                save="key"                                                 
+                                defaultOption={getDefaultOption(matb, datathietbi, tenthietbi)}
+                                save="key"
                                 placeholder="Tất cả"
                                 searchPlaceholder="Từ khóa"
                                 boxStyles={styles.selectBox}
@@ -440,8 +631,8 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
                             <InputGroup
                                 label="Nội dung bảo trì, sửa chữa"
                                 required
-                                value={formState.tencv}
-                                onChangeText={(value) => handleChange(formState.tencv, value)}
+                                value={tencv}
+                                onChangeText={setTenCV}
                                 placeholder="Nhập nội dung bảo trì, sửa chữa"                                 
                             /> 
 
@@ -451,9 +642,9 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
                                 <Text style={styles.required}>(*)</Text> 
                               </View>
                               <SelectList
-                                setSelected={setDataLoaiCV}
+                                setSelected={setLoaiCV}
                                 data={dataStatusLoaiCV}
-                                defaultOption={getDefaultOption(formState.loaicv, dataStatusLoaiCV, tenloaicv)}                           
+                                defaultOption={getDefaultOption(loaicv, dataStatusLoaiCV, tenloaicv)}                           
                                 save="key"                                                 
                                 placeholder="Tất cả"
                                 searchPlaceholder="Từ khóa"
@@ -468,9 +659,9 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
                                 <Text style={styles.required}>(*)</Text> 
                               </View>
                               <SelectList
-                                setSelected={setDataTrangThai}
+                                setSelected={setTrangThai}
                                 data={dataStatusTT}
-                                defaultOption={getDefaultOption(formState.trangthai, dataStatusTT, tentrangthai)}                           
+                                defaultOption={getDefaultOption(trangthai, dataStatusTT, tentrangthai)}                           
                                 save="key"                                                 
                                 placeholder="Tất cả"
                                 searchPlaceholder="Từ khóa"
@@ -478,50 +669,48 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
                                 dropdownStyles={styles.dropdown}
                               />
                             </View>                               
-
                             <View style={styles.datePickerContainer}>
-                                <View style={styles.labelContainer}>
+                              <View style={styles.labelContainer}>
                                   <Text style={styles.label}>Ngày bắt đầu:</Text>
                                   <Text style={styles.required}>(*)</Text>
-                                </View> 
-                                <TouchableOpacity onPress={() => showDatePicker(setDatePickerVisibility1)} style={styles.datePicker}>
-                                  <Text style={styles.dateText}>{formatDate(formState.ngaybd)}</Text>
-                                  <Icon name="calendar" size={26} color="#000" style={styles.dateIcon} />
-                                </TouchableOpacity>
-                                <DateTimePickerModal
-                                  isVisible={isDatePickerVisible1}
-                                  mode="date"
-                                  onConfirm={(date) => handleConfirmDate(date, formState.ngaybd, setDatePickerVisibility1)}
-                                  onCancel={() => hideDatePicker(setDatePickerVisibility1)}
-                                />
+                              </View> 
+                              <TouchableOpacity onPress={() => showDatePicker(setDatePickerVisibility1)} style={styles.datePicker}>
+                                <Text style={styles.dateText}>{formatDate(ngaybd)}</Text>
+                                <Icon name="calendar" size={26} color="#000" style={styles.dateIcon} />
+                              </TouchableOpacity>
+                              <DateTimePickerModal
+                                isVisible={isDatePickerVisible1}
+                                mode="date"
+                                onConfirm={(date) => handleConfirmDate(date, setNgayBD, setDatePickerVisibility1)}
+                                onCancel={() => hideDatePicker(setDatePickerVisibility1)}
+                              />
                             </View>
-
-                              <View style={styles.datePickerContainer}>
-                                <View style={styles.labelContainer}>
+                            <View style={styles.datePickerContainer}>
+                              <View style={styles.labelContainer}>
                                   <Text style={styles.label}>Ngày kết thúc:</Text>
                                   <Text style={styles.required}>(*)</Text>
                                 </View> 
-                                <TouchableOpacity onPress={() => showDatePicker(setDatePickerVisibility2)} style={styles.datePicker}>
-                                  <Text style={styles.dateText}>{formatDate(formState.ngaykt)}</Text>
-                                  <Icon name="calendar" size={26} color="#000" style={styles.dateIcon} />
-                                </TouchableOpacity>
-                                <DateTimePickerModal
-                                  isVisible={isDatePickerVisible2}
-                                  mode="date"
-                                  onConfirm={(date) => handleConfirmDate(date, formState.ngaykt, setDatePickerVisibility2)}
-                                  onCancel={() => hideDatePicker(setDatePickerVisibility2)}
-                                />
-                              </View>
-
+                              <TouchableOpacity onPress={() => showDatePicker(setDatePickerVisibility2)} style={styles.datePicker}>
+                                <Text style={styles.dateText}>{formatDate(ngaykt)}</Text>
+                                <Icon name="calendar" size={26} color="#000" style={styles.dateIcon} />
+                              </TouchableOpacity>
+                              <DateTimePickerModal
+                                isVisible={isDatePickerVisible2}
+                                mode="date"
+                                onConfirm={(date) => handleConfirmDate(date, setNgayKT, setDatePickerVisibility2)}
+                                onCancel={() => hideDatePicker(setDatePickerVisibility2)}
+                              />
+                            </View>
+                            
                               <View style={styles.inputGroup}>
                                 <View style={styles.labelContainer}>
                                   <Text style={styles.label}>Loại kế hoạch:</Text>
                                   <Text style={styles.required}>(*)</Text> 
                                 </View>
                                 <SelectList
-                                  setSelected={setDataLoaiKH}
+                                  setSelected={setLoaiKH}
                                   data={dataStatusLoaiKH}
-                                  defaultOption={getDefaultOption(formState.loaikh, dataStatusLoaiKH, tenloaikh)}                           
+                                  defaultOption={getDefaultOption(loaikh, dataStatusLoaiKH, tenloaikh)}                           
                                   save="key"                                                 
                                   placeholder="Tất cả"
                                   searchPlaceholder="Từ khóa"
@@ -536,9 +725,9 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
                                   <Text style={styles.required}>(*)</Text> 
                                 </View>
                                 <SelectList
-                                  setSelected={setDataDoUuTien}
+                                  setSelected={setDoUuTien}
                                   data={dataStatusDoUuTien}
-                                  defaultOption={getDefaultOption(formState.douutien, dataStatusDoUuTien, tendouutien)}                           
+                                  defaultOption={getDefaultOption(douutien, dataStatusDoUuTien, tendouutien)}                           
                                   save="key"                                                 
                                   placeholder="Tất cả"
                                   searchPlaceholder="Từ khóa"
@@ -553,9 +742,9 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
                                   <Text style={styles.required}>(*)</Text> 
                                 </View>
                                 <SelectList
-                                  setSelected={setDataNhanVienTH}
+                                  setSelected={setMaNVTH}
                                   data={datanvth}
-                                  defaultOption={getDefaultOption(formState.manvth, datanvth, tennvth)}                           
+                                  defaultOption={getDefaultOption(manvth, datanvth, tennvth)}                           
                                   save="key"                                                 
                                   placeholder="Tất cả"
                                   searchPlaceholder="Từ khóa"
@@ -570,9 +759,9 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
                                   <Text style={styles.required}>(*)</Text> 
                                 </View>
                                 <SelectList
-                                  setSelected={setDataNhanVienKT}
+                                  setSelected={setMaNVKT}
                                   data={datanvkt}
-                                  defaultOption={getDefaultOption(formState.manvkt, datanvkt, tennvkt)}                           
+                                  defaultOption={getDefaultOption(manvkt, datanvkt, tennvkt)}                           
                                   save="key"                                                 
                                   placeholder="Tất cả"
                                   searchPlaceholder="Từ khóa"
@@ -580,47 +769,119 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
                                   dropdownStyles={styles.dropdown}
                                 />
                               </View> 
-                              <View style={styles.inputGroup}>
-                                  <View style={styles.labelContainer}>
-                                      <Text style={styles.label}>Công việc thực hiện:</Text>
-                                  </View>
-                                  <View style={styles.richTextContainer}>
-                                      <RichEditor                                        
-                                          ref={richText}
-                                          onChange={richTextNoiDungHandle}
-                                          maxLength={200}
-                                          editorStyle={styles.richEditor}
-                                          placeholder="Nhập công việc thực hiện"
-                                          initialContentHTML={formState.noidung}                                          
-                                          androidHardwareAccelerationDisabled={true}
-                                          style={styles.richTextEditorStyle}
-                                      />
-                                      <RichToolbar
-                                          editor={richText}
-                                          selectedIconTint="#873c1e"
-                                          iconTint="#312921"
-                                          actions={[
-                                              actions.setBold,
-                                              actions.setItalic,
-                                              actions.insertBulletsList,
-                                              actions.insertOrderedList,
-                                              actions.insertLink,
-                                              actions.setStrikethrough,
-                                              actions.setUnderline,
-                                          ]}
-                                          style={styles.richTextToolbarStyle}
-                                      />
-                                  </View>          
-                              </View>
+                              
                               <InputGroup
                                   label="Ghi chú"
-                                  value={formState.ghichu}
-                                  onChangeText={(value) => handleChange(formState.ghichu, value)}
+                                  value={ghichu}
+                                  onChangeText={setGhiChu}
                                   placeholder="Nhập ghi chú"                                 
                               />
                                                                                     
-                          </View>
-                      </View>                      
+                          </View>              
+                        </View>                  
+                      }
+                      {selectedTab === 'tab2' && 
+                        <View style={[styles.cardView, { marginTop: -5 }]}>
+                          <View style={styles.inputGroup}>
+                              <View style={styles.richTextContainer}>
+                                <RichEditor                                        
+                                  ref={richText}
+                                  onChange={setNoiDung}
+                                  maxLength={200}
+                                  editorStyle={styles.richEditor}
+                                  placeholder="Nhập công việc thực hiện"
+                                  initialContentHTML={noidung}                                          
+                                  androidHardwareAccelerationDisabled={true}
+                                  style={styles.richTextEditorStyle}
+                                />
+                                <RichToolbar
+                                  editor={richText}
+                                  selectedIconTint="#873c1e"
+                                  iconTint="#312921"
+                                  actions={[
+                                    actions.setBold,
+                                    actions.setItalic,
+                                    actions.insertBulletsList,
+                                    actions.insertOrderedList,
+                                    actions.insertLink,
+                                    actions.setStrikethrough,
+                                    actions.setUnderline,
+                                    ]}
+                                  style={styles.richTextToolbarStyle}
+                                />
+                              </View>          
+                            </View>
+                        </View>
+                      }
+                      {selectedTab === 'tab3' && 
+                        <View style={[styles.cardView, { marginTop: -5 }]}> 
+                           <View style={{ marginLeft: 10, marginRight: 10 }}>
+
+                            <View style={styles.inputGroup}>
+                                <View style={styles.labelContainer}>
+                                  <Text style={styles.label}>Tên chi tiết:</Text> 
+                                </View>
+                                <TextInput
+                                  style={styles.textInput}
+                                  value={tenct}
+                                  onChangeText={setTenChiTiet}
+                                />  
+                            </View> 
+
+                            <View style={styles.itemInfoRow}>
+                              <View style={styles.itemColumn}>
+                                <Text style={styles.label}>Đơn vị tính:</Text> 
+                                <View style={{ marginRight: 5 }}>                               
+                                  <SelectList
+                                    setSelected={setDVT}
+                                    data={datadvt}
+                                    defaultOption={getDefaultOption(dvt, datadvt, tendvt)}
+                                    save="key"
+                                    placeholder="Tất cả"
+                                    searchPlaceholder="Từ khóa"
+                                    boxStyles={styles.selectBox}
+                                    dropdownStyles={styles.dropdown}
+                                  />
+                                </View>                             
+                              </View>
+                              <View style={styles.itemColumn}>
+                                <Text style={[styles.label, { marginLeft: 5 }]}>Số lượng:</Text>
+                                <View style={{ marginLeft: 5 }}>
+                                  <TextInput
+                                    style={styles.textInput}
+                                    value={sl.toString()}
+                                    onChangeText={(text) => handleNumberChange(text, setSoLuong)}
+                                    keyboardType="numeric"
+                                  />
+                                </View>
+                              </View>
+                            </View>
+                            
+                            <View style={styles.inputGroup}>
+                                <View style={styles.labelContainer}>
+                                  <Text style={styles.label}>Quy cách:</Text>
+                                </View>
+                                <TextInput
+                                  style={styles.textInput}
+                                  value={quycach}
+                                  onChangeText={setQuyCach}
+                                />
+                            </View>  
+                            <View style={{ flex: 1, flexDirection: 'row', marginBottom: 10 }}>
+                              <TouchableOpacity style={styles.btnButtons} onPress={handleAddRow}>
+                                  <Icon name='plus' color={'#fff'} size={16} />
+                              </TouchableOpacity>
+                            </View>
+                          </View>  
+
+                          <Table
+                            data={tableData}                         
+                            removeRow={removeRow}                            
+                          />      
+
+                        </View>
+                      }
+                    </View>                      
                   </ScrollView>
                   
                   <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
@@ -637,6 +898,8 @@ const AddEditCongViecScreen = ({ route, navigation }) => {
       </View>
   );
 };
+
+const cellWidths = [0, 0, 0, 125, 58, 48, 120];
 
 const styles = StyleSheet.create({
     container: {
@@ -660,6 +923,20 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
     },
+    tabsContainer: {
+      marginTop: 5,
+      width: width * 0.96,
+      flexDirection: 'row',
+      paddingVertical: 5,
+      marginLeft: 10,
+    },
+    tab: {     
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderBottomWidth: 2,
+      borderBottomColor: 'transparent',
+      marginHorizontal: 0,    
+    }, 
     cardView : {       
         backgroundColor: 'white',
         width: width * 0.96, 
@@ -669,8 +946,8 @@ const styles = StyleSheet.create({
         marginLeft: 'auto', 
         marginRight: 'auto',
         borderRadius: width * 0.02,
-        paddingBottom: 5,
-        paddingTop: 5,
+        paddingBottom: 10,
+        paddingTop: 10,
     },
     cardTitleH4 : {
         paddingLeft: 10, 
@@ -697,6 +974,13 @@ const styles = StyleSheet.create({
     labelContainer: {
       flexDirection: 'row',
       alignItems: 'center',
+    },
+    itemInfoRow: {
+      flexDirection: 'row',
+      marginBottom: 10,
+    },
+    itemColumn: {
+      flex: 1,
     },
     label: {
       marginBottom: 5,
@@ -743,6 +1027,13 @@ const styles = StyleSheet.create({
     dateIcon: {
       marginLeft: 8,
     },
+    btnButtons: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 8,
+      backgroundColor: '#2755ab', 
+      borderRadius: 5,              
+    }, 
     submitButton: {
       position: 'absolute',
       bottom: 5,
@@ -804,13 +1095,13 @@ const styles = StyleSheet.create({
       alignItems: 'center',   
     },
     horizontalContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
     },
     checkboxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginRight: 15,
+    flexDirection: 'row',
+     alignItems: 'center',
+    marginRight: 15,
         marginBottom: 5,
     },
     checkboxLabel: {
@@ -835,24 +1126,14 @@ const styles = StyleSheet.create({
     richTextContainer: {
       display: "flex",
       flexDirection: "column-reverse",
-      width: "100%",
-      marginBottom: 10,
+      width: "97%",
+      marginLeft: 5,
     },
   
     richTextEditorStyle: {
-      borderBottomLeftRadius: 10,
-      borderBottomRightRadius: 10,
       borderWidth: 1,
-      borderColor: "#ccaf9b",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.23,
-      shadowRadius: 2.62,
-      elevation: 4,
-      fontSize: 20,
+      borderColor: "#ccaf9b",    
+      fontSize: 14,
     },
   
     richTextToolbarStyle: {
@@ -894,6 +1175,55 @@ const styles = StyleSheet.create({
       color: "#312921",
     },
 
+    table: {
+      borderWidth: 1,
+      marginLeft: 6,
+      borderColor: '#ddd',
+      borderRadius: 4,
+      overflow: 'hidden',
+    },
+    tableRow: {
+      flexDirection: 'row',
+    },
+    tableHeader: {
+      backgroundColor: '#f8f9fa',
+      borderBottomWidth: 1,
+      borderColor: '#ddd',
+    },
+    tableHeaderText: {
+      fontWeight: 'bold',
+      fontSize: 12,
+      padding: 8,
+      textAlign: 'center',
+    },
+    tableCell: {
+      borderWidth: 1,
+      borderColor: '#ddd',
+      padding: 8,
+    },
+    centeredCell: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    tableCellText: {
+      fontSize: 12,
+    },
+    tableRowEven: {
+      backgroundColor: '#ffffff',
+    },
+    tableRowOdd: {
+      backgroundColor: '#f2f2f2',
+    },    
+    removeButton: {
+      color: 'red',
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    removeCell: {
+      width: 30,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
   });
   
   export default AddEditCongViecScreen;
